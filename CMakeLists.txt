@@ -27,3 +27,7 @@ add_executable(server
 target_link_libraries(server
 	vncserver.lib
 	ws2_32.lib)
+	
+	
+#add_subdirectory(vncClient)
+#add_subdirectory(vncServer)
