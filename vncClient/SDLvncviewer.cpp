@@ -1,8 +1,11 @@
-
+﻿
  #include <SDL.h>
  #include <signal.h>
  #include <rfb/rfbclient.h>
  
+// Пользовательские литералы
+// https://habr.com/ru/post/140357/
+
  struct { int sdl; int rfb; } buttonMapping[]={
          {1, rfbButton1Mask},
          {2, rfbButton2Mask},
@@ -42,7 +45,7 @@
          client->updateRect.w = width; client->updateRect.h = height;
  
          /* (re)create the surface used as the client's framebuffer */
-         SDL_FreeSurface(rfbClientGetClientData(client, SDL_Init));
+         SDL_FreeSurface(static_cast<SDL_Surface*>(rfbClientGetClientData(client, SDL_Init)));
          SDL_Surface* sdl=SDL_CreateRGBSurface(0,
                                                width,
                                                height,
@@ -53,7 +56,7 @@
  
          rfbClientSetClientData(client, SDL_Init, sdl);
          client->width = sdl->pitch / (depth / 8);
-         client->frameBuffer=sdl->pixels;
+         client->frameBuffer = static_cast<uint8_t*>(sdl->pixels);
  
          client->format.bitsPerPixel=depth;
          client->format.redShift=sdl->format->Rshift;
@@ -193,7 +196,7 @@
  }
  
  static void update(rfbClient* cl,int x,int y,int w,int h) {
-         SDL_Surface *sdl = rfbClientGetClientData(cl, SDL_Init);
+   SDL_Surface *sdl = static_cast<SDL_Surface*>(rfbClientGetClientData(cl, SDL_Init));
          /* update texture from surface->pixels */
          SDL_Rect r = {x,y,w,h};
          if(SDL_UpdateTexture(sdlTexture, &r, (void*)((char*)sdl->pixels + y*sdl->pitch + x*4), sdl->pitch) < 0)
@@ -422,10 +425,11 @@
  }
  
  
- static rfbCredential* get_credential(rfbClient* cl, int credentialType){
-         rfbCredential *c = malloc(sizeof(rfbCredential));
-         c->userCredential.username = malloc(RFB_BUF_SIZE);
-         c->userCredential.password = malloc(RFB_BUF_SIZE);
+ static rfbCredential* get_credential(rfbClient* cl, int credentialType)
+ {
+   rfbCredential *c = static_cast<rfbCredential*>(malloc(sizeof(rfbCredential)));
+         c->userCredential.username = static_cast<char*>(malloc(RFB_BUF_SIZE));
+         c->userCredential.password = static_cast<char*>(malloc(RFB_BUF_SIZE));
  
          if(credentialType != rfbCredentialTypeUser) {
              rfbClientErr("something else than username and password required for authentication\n");
