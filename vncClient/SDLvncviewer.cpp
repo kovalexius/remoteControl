@@ -5,6 +5,11 @@
  
 // Пользовательские литералы
 // https://habr.com/ru/post/140357/
+// http://rsdn.org/article/qna/Cpp/bin.xml
+
+#if defined(_MSC_VER) && _MSC_VER < 1900
+#include "cpp_legacy_crutchs.h"
+#endif 
 
  struct { int sdl; int rfb; } buttonMapping[]={
          {1, rfbButton1Mask},
@@ -16,11 +21,19 @@
  };
  
  struct { char mask; int bits_stored; } utf8Mapping[]= {
-         {0b00111111, 6},
-         {0b01111111, 7},
-         {0b00011111, 5},
-         {0b00001111, 4},
-         {0b00000111, 3},
+#if defined(_MSC_VER) && _MSC_VER < 1900
+		{ BIN8(00111111), 3 },
+		{ BIN8(01111111), 7 },
+		{ BIN8(00011111), 5 },
+		{ BIN8(00001111), 4 },
+		{ BIN8(00000111), 3 },
+#else
+		{ 0b00111111, 6 },
+		{ 0b01111111, 7 },
+		{ 0b00011111, 5 },
+		{ 0b00001111, 4 },
+		{ 0b00000111, 3 },
+#endif
          {0,0}
  };
  
@@ -290,11 +303,13 @@
  }
  
  
- static rfbBool handleSDLEvent(rfbClient *cl, SDL_Event *e)
- {
-         switch(e->type) {
+static rfbBool handleSDLEvent(rfbClient *cl, SDL_Event *e)
+{
+	switch(e->type)
+	{
          case SDL_WINDOWEVENT:
-             switch (e->window.event) {
+             switch (e->window.event) 
+			 {
              case SDL_WINDOWEVENT_EXPOSED:
                  SendFramebufferUpdateRequest(cl, 0, 0,
                                          cl->width, cl->height, FALSE);
@@ -341,12 +356,20 @@
                      }
                  if(e->wheel.x > 0)
                      for(steps = 0; steps < e->wheel.x; ++steps) {
+#if defined(_MSC_VER) && _MSC_VER < 1900
+						 SendPointerEvent(cl, x, y, BIN8(01000000));
+#else
                          SendPointerEvent(cl, x, y, 0b01000000);
+#endif
                          SendPointerEvent(cl, x, y, 0);
                      }
                  if(e->wheel.x < 0)
                      for(steps = 0; steps > e->wheel.x; --steps) {
+#if defined(_MSC_VER) && _MSC_VER < 1900
+						 SendPointerEvent(cl, x, y, BIN8(00100000));
+#else
                          SendPointerEvent(cl, x, y, 0b00100000);
+#endif
                          SendPointerEvent(cl, x, y, 0);
                      }
                  break;
@@ -393,14 +416,16 @@
                  if (e->key.keysym.sym == SDLK_LALT)
                          leftAltKeyDown = e->type == SDL_KEYDOWN;
                  break;
-         case SDL_TEXTINPUT:
-                 if (viewOnly)
-                         break;
-                 rfbKeySym sym = utf8char2rfbKeySym(e->text.text);
-                 SendKeyEvent(cl, sym, TRUE);
-                 SendKeyEvent(cl, sym, FALSE);
-                 break;
-         case SDL_QUIT:
+		case SDL_TEXTINPUT:
+		{
+				if (viewOnly)
+					 break;
+				rfbKeySym sym = utf8char2rfbKeySym(e->text.text);
+				SendKeyEvent(cl, sym, TRUE);
+				SendKeyEvent(cl, sym, FALSE);
+				break;
+		}
+        case SDL_QUIT:
                  if(listenLoop)
                    {
                      cleanup(cl);
@@ -411,10 +436,10 @@
                      rfbClientCleanup(cl);
                      exit(0);
                    }
-         default:
+        default:
                  rfbClientLog("ignore SDL event: 0x%x\n", e->type);
-         }
-         return TRUE;
+        }
+        return TRUE;
  }
  
  static void got_selection(rfbClient *cl, const char *text, int len)

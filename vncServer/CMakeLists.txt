@@ -7,7 +7,7 @@ project(armRemote)
 
 #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
 #set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
-if (_MSC_VER < 1900)
+if (_MSC_VER LESS 1900)
     MESSAGE(STATUS "_MSC_VER < 1900")
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
@@ -25,12 +25,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libvncserver/
 				${CMAKE_CURRENT_BINARY_DIR}/libvncserver/
 				)
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/../libvncserver/ libvncserver
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../libvncserver/ libvncserver
 				EXCLUDE_FROM_ALL
 				)
 
 link_directories(
-				${CMAKE_CURRENT_SOURCE_DIR}/../SDL2-2.0.10/lib/x64/
 				${CMAKE_CURRENT_BINARY_DIR}/libvncserver/
 				)
 				
@@ -38,8 +37,7 @@ link_directories(
 
 add_executable(armRemote
 				${CMAKE_CURRENT_SOURCE_DIR}/vncServer.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/a.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/a.h
+        
         )
 				
 target_compile_options(armRemote
