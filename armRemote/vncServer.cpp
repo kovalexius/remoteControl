@@ -7,10 +7,12 @@
 #endif
 */
 
-#include <rfb/rfb.h>
-
 #include <iostream>
 #include <ctime>
+
+#include <rfb/rfb.h>
+
+
 
 
 const int WIDTH = 1600;
