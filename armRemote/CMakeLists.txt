@@ -2,16 +2,12 @@ cmake_minimum_required(VERSION 2.8)
 
 project(armRemote)
 
-
-if (_MSC_VER LESS 1900)
-    MESSAGE(STATUS "_MSC_VER < 1900")
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+message(STATUS "MSVC: ${MSVC} MSVC_VERSION: " ${MSVC_VERSION})
+if (${MSVC_VERSION} LESS 1900)
+    #add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
 	add_definitions(
-		#-D_NO_CRT_STDIO_INLINE
-		#-D__STDC_WANT_LIB_EXT1__=1
 		-Dsnprintf=_snprintf
-		#/NODEFAULTLIB:library
 		)
 
 	#set(CMAKE_CXX_FLAGS_RELEASE "/MT")
@@ -23,6 +19,7 @@ endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libvncserver/
 				${CMAKE_CURRENT_SOURCE_DIR}/../SDL2-2.0.10/include/ 
+				${CMAKE_CURRENT_SOURCE_DIR}/../JShot/jShot/src/
 				${CMAKE_CURRENT_BINARY_DIR}/libvncserver/
 				)
 
@@ -30,27 +27,27 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../libvncserver/ libvncserver
 				EXCLUDE_FROM_ALL
 				)
 
-link_directories(
-				${CMAKE_CURRENT_BINARY_DIR}/libvncserver/
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../JShot/jShot/ jShot
+				EXCLUDE_FROM_ALL
 				)
-				
-
 
 add_executable(armRemote
-				${CMAKE_CURRENT_SOURCE_DIR}/vncServer.cpp
-        
-        )
+				${CMAKE_CURRENT_SOURCE_DIR}/server.cpp
+				${CMAKE_CURRENT_SOURCE_DIR}/server_holder.cpp
+				${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+				)
 
-if (_MSC_VER)			
-	target_compile_options(armRemote
-						PRIVATE /W3
-					)
-endif()		
+#if (MSVC)			
+#	target_compile_options(armRemote
+#						PRIVATE /W3
+#					)
+#endif()		
 
-if (_MSC_VER)			
+if (MSVC)			
 	target_link_libraries(armRemote
 		vncserver
 		vncclient
+		jShot
 		ws2_32.lib
 		)
 else()
