@@ -1,0 +1,3 @@
+[submodule "JShot"]
+	path = JShot
+	url = git@github.com:kovalexius/JShot.git
