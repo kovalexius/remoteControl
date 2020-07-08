@@ -6,11 +6,13 @@
 
 #include "server.h"
 
+
 class ServerHolder
 {
 public:
-	// Double check thread safe instanciator
+	// Переделать на шаблон может?
 	static std::shared_ptr<VNCServer> get();
+	static std::shared_ptr<VNCServer> get(const CRectangle& _region, std::shared_ptr<ScrCaptureBase>& _shooter);
 	static void destroy();
 private:
 	static std::shared_ptr<VNCServer> g_vnc;

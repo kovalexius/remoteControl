@@ -1,27 +1,31 @@
 #ifndef __SERVER__H
 #define __SERVER__H
 
-#include "types/geometry_types.h"
-#include "GDIScreenShooter.h"
-
 #include <rfb/rfb.h>
+
+#include "types/geometry_types.h"
+
+#include "screenshot_poly.h"
+
 
 class VNCServer
 {
 public:
-	VNCServer() = delete;
-	explicit VNCServer(const CRectangle& _region);
+	VNCServer(const CRectangle& _region, std::shared_ptr<ScrCaptureBase>& _shooter);
+	virtual ~VNCServer();
+
+	void run();
 private:
 	void initBuffer(unsigned char* buffer);
 	void newframebuffer(rfbScreenInfoPtr screen, int width, int height);
 
 	/* Here the pointer events are handled */
-	static void VNCServer::doptr(int buttonMask, int x, int y, rfbClientPtr cl);
-
+	static void doptr(int buttonMask, int x, int y, rfbClientPtr cl);
+	static void doDisplayHook(struct _rfbClientRec* cl);
 	static enum rfbNewClientAction VNCServer::newclient(rfbClientPtr cl);
 
 	// Переделать на полиморфизм
-	CGDIScreenShooter m_shooter;
+	std::shared_ptr<ScrCaptureBase> m_shooter;
 
 	CRectangle	m_region;
 

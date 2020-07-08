@@ -115,7 +115,8 @@
          return TRUE;
  }
  
- static rfbKeySym SDL_key2rfbKeySym(SDL_KeyboardEvent* e) {
+ static rfbKeySym SDL_key2rfbKeySym(SDL_KeyboardEvent* e) 
+ {
          rfbKeySym k = 0;
          SDL_Keycode sym = e->keysym.sym;
  
@@ -196,7 +197,8 @@
  }
  
  /* UTF-8 decoding is from https://rosettacode.org/wiki/UTF-8_encode_and_decode which is under GFDL 1.2 */
- static rfbKeySym utf8char2rfbKeySym(const char chr[4]) {
+ static rfbKeySym utf8char2rfbKeySym(const char chr[4]) 
+ {
          int bytes = strlen(chr);
          int shift = utf8Mapping[0].bits_stored * (bytes - 1);
          rfbKeySym codep = (*chr++ & utf8Mapping[bytes].mask) << shift;
@@ -208,7 +210,8 @@
          return codep;
  }
  
- static void update(rfbClient* cl,int x,int y,int w,int h) {
+ static void update(rfbClient* cl,int x,int y,int w,int h) 
+ {
    SDL_Surface *sdl = static_cast<SDL_Surface*>(rfbClientGetClientData(cl, SDL_Init));
          /* update texture from surface->pixels */
          SDL_Rect r = {x,y,w,h};
@@ -230,7 +233,8 @@
  }
  
  /* trivial support for textchat */
- static void text_chat(rfbClient* cl, int value, char *text) {
+ static void text_chat(rfbClient* cl, int value, char *text) 
+ {
          switch(value) {
          case rfbTextChatOpen:
                  fprintf(stderr,"TextChat: We should open a textchat window!\n");
@@ -495,12 +499,14 @@ static rfbBool handleSDLEvent(rfbClient *cl, SDL_Event *e)
                          enableResizable = 1;
                  else if (!strcmp(argv[i], "-no-resizable"))
                          enableResizable = 0;
-                 else if (!strcmp(argv[i], "-listen")) {
+                 else if (!strcmp(argv[i], "-listen")) 
+				 {
                          listenLoop = 1;
                          argv[i] = "-listennofork";
                          ++j;
                  }
-                 else {
+                 else 
+				 {
                          if (i != j)
                                  argv[j] = argv[i];
                          j++;
@@ -511,7 +517,8 @@ static rfbBool handleSDLEvent(rfbClient *cl, SDL_Event *e)
          atexit(SDL_Quit);
          signal(SIGINT, exit);
  
-         do {
+         do 
+		 {
            /* 16-bit: cl=rfbGetClient(5,3,2); */
            cl=rfbGetClient(8,3,4);
            cl->MallocFrameBuffer=resize;
@@ -524,14 +531,16 @@ static rfbBool handleSDLEvent(rfbClient *cl, SDL_Event *e)
            cl->listenPort = LISTEN_PORT_OFFSET;
            cl->listen6Port = LISTEN_PORT_OFFSET;
            if(!rfbInitClient(cl,&argc,argv))
-             {
+           {
                cl = NULL; /* rfbInitClient has already freed the client struct */
                cleanup(cl);
                break;
-             }
+           }
  
-           while(1) {
-             if(SDL_PollEvent(&e)) {
+           while(1) 
+		   {
+             if(SDL_PollEvent(&e)) 
+			 {
                /*
                  handleSDLEvent() return 0 if user requested window close.
                  In this case, handleSDLEvent() will have called cleanup().
@@ -539,19 +548,20 @@ static rfbBool handleSDLEvent(rfbClient *cl, SDL_Event *e)
                if(!handleSDLEvent(cl, &e))
                  break;
              }
-             else {
+             else 
+			 {
                i=WaitForMessage(cl,500);
                if(i<0)
-                 {
+               {
                    cleanup(cl);
                    break;
-                 }
+               }
                if(i)
                  if(!HandleRFBServerMessage(cl))
-                   {
+                 {
                      cleanup(cl);
                      break;
-                   }
+                 }
              }
            }
          }

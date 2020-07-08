@@ -4,17 +4,9 @@ project(armRemote)
 
 message(STATUS "MSVC: ${MSVC} MSVC_VERSION: " ${MSVC_VERSION})
 if (${MSVC_VERSION} LESS 1900)
-    #add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-
 	add_definitions(
 		-Dsnprintf=_snprintf
 		)
-
-	#set(CMAKE_CXX_FLAGS_RELEASE "/MT")
-	#set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
-
-	#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-	#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
 endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libvncserver/
@@ -33,14 +25,23 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../JShot/jShot/ jShot
 
 add_executable(armRemote
 				${CMAKE_CURRENT_SOURCE_DIR}/server.cpp
+				${CMAKE_CURRENT_SOURCE_DIR}/server.h
 				${CMAKE_CURRENT_SOURCE_DIR}/server_holder.cpp
+				${CMAKE_CURRENT_SOURCE_DIR}/server_holder.h
+				${CMAKE_CURRENT_SOURCE_DIR}/screenshot_poly.cpp
+				${CMAKE_CURRENT_SOURCE_DIR}/screenshot_poly.h
 				${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 				)
 
-#if (MSVC)			
+#if (MSVC)
+#	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 #	target_compile_options(armRemote
 #						PRIVATE /W3
 #					)
+#	set(CMAKE_CXX_FLAGS_RELEASE "/MT")
+#	set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
+#	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+#	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
 #endif()		
 
 if (MSVC)			
