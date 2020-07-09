@@ -1,10 +1,13 @@
 #ifndef __SERVER__H
 #define __SERVER__H
 
+#include <memory>
+#include <cstring>
+#include <exception>
+
 #include <rfb/rfb.h>
 
 #include "types/geometry_types.h"
-
 #include "screenshot_poly.h"
 
 
@@ -22,9 +25,8 @@ private:
 	/* Here the pointer events are handled */
 	static void doptr(int buttonMask, int x, int y, rfbClientPtr cl);
 	static void doDisplayHook(struct _rfbClientRec* cl);
-	static enum rfbNewClientAction VNCServer::newclient(rfbClientPtr cl);
+	static enum rfbNewClientAction newclient(rfbClientPtr cl);
 
-	// Переделать на полиморфизм
 	std::shared_ptr<ScrCaptureBase> m_shooter;
 
 	CRectangle	m_region;

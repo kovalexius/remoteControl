@@ -4,11 +4,17 @@ std::shared_ptr<VNCServer> ServerHolder::g_vnc;
 
 std::recursive_mutex ServerHolder::g_mutex;
 
+
 std::shared_ptr<VNCServer> ServerHolder::get()
 {
+	/*
 	auto obj = std::make_shared<DXScrCapture>();
 	auto base = std::dynamic_pointer_cast<ScrCaptureBase>(obj);
 	return ServerHolder::get(CRectangle(), base);
+	*/
+	if(g_vnc == nullptr)
+		throw std::string("Singletone not initialized! Please, call get() with args!");
+	return g_vnc;
 }
 
 // Double check thread safe instanciator

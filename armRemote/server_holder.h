@@ -10,8 +10,9 @@
 class ServerHolder
 {
 public:
-	// Переделать на шаблон может?
+	// Get existed object, it doesn't construct it. Object must be already constructed, otherwise exception
 	static std::shared_ptr<VNCServer> get();
+	
 	static std::shared_ptr<VNCServer> get(const CRectangle& _region, std::shared_ptr<ScrCaptureBase>& _shooter);
 	static void destroy();
 private:

@@ -4,9 +4,13 @@
 #include <vector>
 #include "types/geometry_types.h"
 
+#ifdef _WIN32
 #include "GDIScreenShooter.h"
 #include "DXScreenShooter.h"
 #include "DDrawScreenShooter.h"
+#elif __linux__
+
+#endif
 
 class ScrCaptureBase
 {
@@ -45,7 +49,7 @@ private:
 	CDxScreenShooter m_shooter;
 };
 
-class DDrawSrcCapture : public ScrCaptureBase
+class DDrawScrCapture : public ScrCaptureBase
 {
 public:
 	bool GetScrCapture(const CRectangle& _region, std::vector<char>& _outbuffer) override
@@ -58,7 +62,13 @@ private:
 	CDDrawScreenShooter m_shooter;
 };
 #elif __linux__
-
+class X11ScrCapture : public ScrCaptureBase
+{
+	bool GetScrCapture(const CRectangle& _region, std::vector<char>& _outbuffer) override
+	{
+		return true;
+	}
+};
 #endif
 
 #endif

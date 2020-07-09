@@ -14,7 +14,7 @@ VNCServer::VNCServer(const CRectangle& _region, std::shared_ptr<ScrCaptureBase>&
 								3, 
 								m_region.getBytesPerPixel());
 	if (!m_rfbScreen)
-		throw std::exception("Can't initialize rfbScreen");
+		throw std::string("Can't initialize rfbScreen");
 	m_rfbScreen->frameBuffer = nullptr;
 	m_rfbScreen->frameBuffer = static_cast<char*>(malloc(m_region.getSize().m_x * m_region.getSize().m_y * m_region.getBytesPerPixel()));
 	initBuffer((unsigned char*)m_rfbScreen->frameBuffer);
