@@ -2,10 +2,11 @@ cmake_minimum_required(VERSION 2.8)
 
 project(vncAdmin)
 
-add_subdirectory(
+if(NOT TARGET vncserver AND NOT TARGET vncclient)
+	add_subdirectory(
 				${CMAKE_CURRENT_SOURCE_DIR}/../libvncserver/ libvncserver
-				EXCLUDE_FROM_ALL
-				)
+				EXCLUDE_FROM_ALL )
+endif()
 				
 add_subdirectory(
 				${CMAKE_CURRENT_SOURCE_DIR}/../SDL2-2.0.12/ SDL2

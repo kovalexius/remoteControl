@@ -23,8 +23,10 @@ endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../JShot/jShot/src/)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../libvncserver/ libvncserver
+if(NOT TARGET vncserver AND NOT TARGET vncclient)
+	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../libvncserver/ libvncserver
 				EXCLUDE_FROM_ALL)
+endif()
 
 if(WIN32)
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../JShot/jShot/ jShot
