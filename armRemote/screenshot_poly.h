@@ -9,7 +9,7 @@
 #include "DXScreenShooter.h"
 #include "DDrawScreenShooter.h"
 #elif __linux__
-
+#include "sdlScrCapturer.h"
 #endif
 
 class ScrCaptureBase
@@ -62,12 +62,17 @@ private:
 	CDDrawScreenShooter m_shooter;
 };
 #elif __linux__
-class X11ScrCapture : public ScrCaptureBase
+class SdlScrCapture : public ScrCaptureBase
 {
+public:
 	bool GetScrCapture(const CRectangle& _region, std::vector<char>& _outbuffer) override
 	{
+		if(!m_shooter.getScreenshot(_region, _outbuffer))
+			return false;
 		return true;
 	}
+private:
+	SDLScrCapturerImpl m_shooter;
 };
 #endif
 

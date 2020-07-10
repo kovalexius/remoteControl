@@ -19,7 +19,7 @@ int main(int argc,char** argv)
 #ifdef _WIN32
 	std::shared_ptr<ScrCaptureBase> scrCapture(std::make_shared<DXScrCapture>());
 #else
-	std::shared_ptr<ScrCaptureBase> scrCapture(std::make_shared<X11ScrCapture>());
+	std::shared_ptr<ScrCaptureBase> scrCapture(std::make_shared<SdlScrCapture>());
 #endif
 	auto server = ServerHolder::get(region, scrCapture);
 	server->run();

@@ -4,12 +4,13 @@
 #include <vector>
 
 #include "types/geometry_types.h"
-#include "SDL2.h"
+#include "SDL.h"
 
-class SDLScrCapturer
+class SDLScrCapturerImpl
 {
 public:
-    explicit SDLScrCapturer(const CRectangle& _region);
+    //explicit SDLScrCapturer(const CRectangle& _region);
+    SDLScrCapturerImpl();
 
     bool getScreenshot(const CRectangle& _region, 
 						std::vector<char>& _outBuffer);
@@ -20,6 +21,6 @@ private:
     SDL_Window* m_sdlWindow;
 
     CRectangle m_region;
-}
+};
 
 #endif

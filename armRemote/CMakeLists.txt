@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 2.8)
 
 project(armRemote)
 
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../SDL2-2.0.12/
+						${CMAKE_CURRENT_SOURCE_DIR}/../SDL2-2.0.12/cmake/
+						${CMAKE_CURRENT_SOURCE_DIR}/../SDL2-2.0.12/include/)
+
 if (DEFINED ${MSVC_VERSION})
 	if (${MSVC_VERSION} LESS 1900)
 		add_definitions(
@@ -11,8 +15,7 @@ if (DEFINED ${MSVC_VERSION})
 endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libvncserver/
-				${CMAKE_CURRENT_SOURCE_DIR}/../SDL2-2.0.10/include/ 
-				
+				${CMAKE_CURRENT_SOURCE_DIR}/../SDL2-2.0.12/include/ 
 				${CMAKE_CURRENT_BINARY_DIR}/libvncserver/
 				)
 
@@ -21,6 +24,7 @@ if(WIN32)
 elseif(LINUX)
 endif()
 
+# Перенести geometry_types.h в общую часть
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../JShot/jShot/src/)
 
 if(NOT TARGET vncserver AND NOT TARGET vncclient)
@@ -33,6 +37,9 @@ if(WIN32)
 					EXCLUDE_FROM_ALL)
 elseif(LINUX)
 endif()
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../SDLScreenshoter/ SDLScreenshoter)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SDLScreenshoter/)
 
 add_executable(armRemote
 				${CMAKE_CURRENT_SOURCE_DIR}/server.cpp
@@ -55,7 +62,7 @@ add_executable(armRemote
 #	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
 #endif()		
 
-if (MSVC)			
+if (MSVC)
 	target_link_libraries(armRemote
 		vncserver
 		vncclient
