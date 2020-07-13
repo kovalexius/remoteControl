@@ -19,8 +19,10 @@ private:
 
     SDL_DisplayMode m_displayMode;
     SDL_Window* m_sdlWindow;
+    SDL_Renderer* m_renderer;
 
     CRectangle m_region;
+
 };
 
 #endif

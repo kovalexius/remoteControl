@@ -12,11 +12,15 @@ if(NOT TARGET vncserver AND NOT TARGET vncclient)
 				EXCLUDE_FROM_ALL )
 endif()
 
-set(SDL_STATIC ON)	
-add_subdirectory(
+
+if(NOT TARGET SDL2-static AND NOT TARGET SDL2main)
+	set(SDL_STATIC_ENABLED_BY_DEFAULT ON)
+	set(SDL_STATIC ON)
+	add_subdirectory(
 				${CMAKE_CURRENT_SOURCE_DIR}/../SDL2-2.0.12/ SDL2
-				EXCLUDE_FROM_ALL
-				)
+				EXCLUDE_FROM_ALL)
+endif()
+
 
 include_directories(
                 ${CMAKE_CURRENT_SOURCE_DIR}/../libvncserver 
@@ -26,10 +30,10 @@ include_directories(
                 
 
 
-link_directories(
-                ${CMAKE_CURRENT_BINARY_DIR}/libvncserver/
-				${CMAKE_CURRENT_BINARY_DIR}/SDL2/
-                )
+#link_directories(
+#                ${CMAKE_CURRENT_BINARY_DIR}/libvncserver/
+#				${CMAKE_CURRENT_BINARY_DIR}/SDL2/
+#                )
 
 
 add_executable(vncAdmin
@@ -39,7 +43,7 @@ add_executable(vncAdmin
 if (MSVC)	
 	target_link_libraries(vncAdmin
 		SDL2-static
-		SDL2main
+		#SDL2main
 		vncserver
 		vncclient
 		ws2_32.lib

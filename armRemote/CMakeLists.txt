@@ -19,26 +19,24 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libvncserver/
 				${CMAKE_CURRENT_BINARY_DIR}/libvncserver/
 				)
 
-if(WIN32)
-	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../JShot/jShot/src/)
-elseif(LINUX)
-endif()
-
-# Перенести geometry_types.h в общую часть
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../JShot/jShot/src/)
-
 if(NOT TARGET vncserver AND NOT TARGET vncclient)
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../libvncserver/ libvncserver
 				EXCLUDE_FROM_ALL)
 endif()
 
+
+# Перенести geometry_types.h в общую часть
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../JShot/jShot/src/)
+
 if(WIN32)
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../JShot/jShot/src/)
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../JShot/jShot/ jShot
 					EXCLUDE_FROM_ALL)
 elseif(LINUX)
 endif()
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../SDLScreenshoter/ SDLScreenshoter)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../SDLScreenshoter/ SDLScreenshoter
+					EXCLUDE_FROM_ALL)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SDLScreenshoter/)
 
 add_executable(armRemote
@@ -66,6 +64,7 @@ if (MSVC)
 	target_link_libraries(armRemote
 		vncserver
 		vncclient
+		SDLCapture
 		jShot
 		ws2_32.lib
 		)
@@ -73,6 +72,7 @@ else()
 	target_link_libraries(armRemote
 		vncserver
 		vncclient
+		SDLCapture
 		pthread
 		)
 endif()
