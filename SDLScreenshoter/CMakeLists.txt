@@ -20,8 +20,8 @@ include_directories(
 				${CMAKE_CURRENT_BINARY_DIR}/SDL2/include
 				)
 
-# Перенести geometry_types.h в общую часть
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../JShot/jShot/src/)
+# Общая часть
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../JShot/common/)
 
 add_library(SDLCapture STATIC 
                     ./sdlScrCapturer.cpp
@@ -31,4 +31,5 @@ add_library(SDLCapture STATIC
 target_link_libraries(SDLCapture
                             SDL2-static
 	                        SDL2main
+							-lX11
 							)

@@ -19,16 +19,19 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libvncserver/
 				${CMAKE_CURRENT_BINARY_DIR}/libvncserver/
 				)
 
-# Перенести geometry_types.h в общую часть
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../JShot/jShot/src/)
+# Общая часть
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../JShot/common/)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../SDLScreenshoter/ SDLScreenshoter
-					)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../SDLScreenshoter/ SDLScreenshoter)
+
 
 if(WIN32)
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../JShot/jShot/src/)
 	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../JShot/jShot/ jShot
 					EXCLUDE_FROM_ALL)
+else()
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../X11Screenshoter/)
+	add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../X11Screenshoter/ X11Screenshoter)
 endif()
 
 if(NOT TARGET vncserver AND NOT TARGET vncclient)
@@ -61,6 +64,7 @@ else()
 		vncserver
 		vncclient
 		SDLCapture
+		X11Capture
 		pthread
 		)
 endif()

@@ -1,5 +1,5 @@
-#ifndef __SDL_SCREEN_CAPTURER__H
-#define __SDL_SCREEN_CAPTURER__H
+#ifndef __SDL_SCREEN_CAPTURER_IMPL__H
+#define __SDL_SCREEN_CAPTURER_IMPL__H
 
 #include <vector>
 
@@ -10,7 +10,7 @@
 class SDLScrCapturerImpl
 {
 public:
-    //explicit SDLScrCapturer(const CRectangle& _region);
+    //explicit SDLScrCapturerImpl(const CRectangle& _region);
     SDLScrCapturerImpl();
 
     bool getScreenshot(const CRectangle& _region, 
