@@ -19,21 +19,32 @@ SDLScrCapturerImpl::SDLScrCapturerImpl()
 void SDLScrCapturerImpl::initSdl()
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+	{
+		std::cout << std::string("SDL_Init Error: ") + std::string(SDL_GetError()) << std::endl;
 		throw std::string("SDL_Init Error: ") + std::string(SDL_GetError());
+	}
 
 	auto request = SDL_GetDesktopDisplayMode(0, &m_displayMode);
-	if(!request)
+	if(request)
+	{
+		std::cout << std::string("SDL_GetDesktopDisplayMode: ") + std::string(SDL_GetError()) << std::endl;
 		throw std::string("SDL_GetDesktopDisplayMode: ") + std::string(SDL_GetError());
-
+	}
 
 	//Display* display = XOpenDisplay(NULL);
 	SDL_Window* m_sdlWindow = SDL_CreateWindowFrom(m_displayMode.driverdata);
 	if(m_sdlWindow == NULL)
+	{
+		std::cout << std::string("failed SDL_CreateWindowFrom: ") + std::string(SDL_GetError()) << std::endl;
 		throw std::string("failed SDL_CreateWindowFrom: ") + std::string(SDL_GetError());
+	}
 
 	SDL_Renderer* m_renderer = SDL_CreateRenderer(m_sdlWindow, -1, 0);
 	if(m_renderer == NULL)
+	{
+		std::cout << std::string("failed SDL_CreateRenderer: ") + std::string(SDL_GetError()) << std::endl;
 		throw std::string("failed SDL_CreateRenderer: ") + std::string(SDL_GetError());
+	}
 }
 
 bool SDLScrCapturerImpl::getScreenshot(const CRectangle& _region, 
@@ -41,8 +52,15 @@ bool SDLScrCapturerImpl::getScreenshot(const CRectangle& _region,
 {
 	if(m_region != _region)
 	{
-		m_region = _region;
-		initSdl();
+		try
+		{
+			m_region = _region;
+			initSdl();
+		}
+		catch(const std::exception& e)
+		{
+			std::cout << e.what() << '\n';
+		}
 	}
 
 	// Create SDL_Surface with depth of 32 bits

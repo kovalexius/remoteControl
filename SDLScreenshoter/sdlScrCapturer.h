@@ -3,8 +3,9 @@
 
 #include <vector>
 
-#include "types/geometry_types.h"
 #include "SDL.h"
+#include "types/geometry_types.h"
+
 
 class SDLScrCapturerImpl
 {
