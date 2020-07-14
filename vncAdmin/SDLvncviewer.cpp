@@ -1,9 +1,9 @@
 ﻿
- #include <string>
+#include <string>
 
- #include <SDL.h>
- #include <signal.h>
- #include <rfb/rfbclient.h>
+#include <SDL.h>
+#include <signal.h>
+#include <rfb/rfbclient.h>
  
 // Пользовательские литералы
 // https://habr.com/ru/post/140357/
@@ -13,9 +13,9 @@
 #include "cpp_legacy_crutchs.h"
 #endif 
 
- struct { int sdl; int rfb; } buttonMapping[]={
-         {1, rfbButton1Mask},
-         {2, rfbButton2Mask},
+struct { int sdl; int rfb; } buttonMapping[]={
+	{1, rfbButton1Mask},
+	{2, rfbButton2Mask},
          {3, rfbButton3Mask},
          {4, rfbButton4Mask},
          {5, rfbButton5Mask},
@@ -39,15 +39,15 @@
          {0,0}
  };
  
- static int enableResizable = 1, viewOnly, listenLoop, buttonMask;
- int sdlFlags;
- SDL_Texture *sdlTexture;
- SDL_Renderer *sdlRenderer;
- SDL_Window *sdlWindow;
- /* client's pointer position */
- int x,y;
+static int enableResizable = 1, viewOnly, listenLoop, buttonMask;
+int sdlFlags;
+SDL_Texture *sdlTexture;
+SDL_Renderer *sdlRenderer;
+SDL_Window *sdlWindow;
+/* client's pointer position */
+int x,y;
  
- static int rightAltKeyDown, leftAltKeyDown;
+static int rightAltKeyDown, leftAltKeyDown;
  
 static rfbBool resize(rfbClient* client) 
 {
@@ -529,6 +529,9 @@ static rfbCredential* get_credential(rfbClient* cl, int credentialType)
            cl->GetCredential = get_credential;
            cl->listenPort = LISTEN_PORT_OFFSET;
            cl->listen6Port = LISTEN_PORT_OFFSET;
+
+           cl->serverHost = "localhost";
+           
            if(!rfbInitClient(cl,&argc,argv))
            {
                cl = NULL; /* rfbInitClient has already freed the client struct */
@@ -537,7 +540,7 @@ static rfbCredential* get_credential(rfbClient* cl, int credentialType)
            }
  
            while(1) 
-		   {
+	{
              if(SDL_PollEvent(&e)) 
 			 {
                /*

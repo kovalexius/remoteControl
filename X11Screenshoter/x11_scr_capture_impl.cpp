@@ -49,7 +49,7 @@ CRectangle& X11ScrCapturerImpl::getRectangle()
 bool X11ScrCapturerImpl::getScreenshot(CRectangle& _region, 
 						std::vector<char>& _outBuffer)
 {
-	std::cout << "m_region: " << m_region << std::endl;
+	//std::cout << "m_region: " << m_region << std::endl;
 	XImage *image = XGetImage(m_display, 
 								m_root, 
 								m_region.getLeftBottom().m_x, 
@@ -81,7 +81,7 @@ bool X11ScrCapturerImpl::getScreenshot(CRectangle& _region,
 
 	_outBuffer.resize(_region.getSize().m_x * _region.getSize().m_y * _region.getBytesPerPixel());
 	m_region = _region;
-	std::cout << "m_region: " << m_region << std::endl;
+	//std::cout << "m_region: " << m_region << std::endl;
 	std::memcpy(_outBuffer.data(), image->data, _outBuffer.size());
 
 	XDestroyImage(image);
