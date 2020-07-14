@@ -1,6 +1,9 @@
 #include "x11_scr_capture_impl.h"
 
 #include <iostream>
+#include <cstring>
+
+#include <X11/Xutil.h>
 
 X11ScrCapturerImpl::X11ScrCapturerImpl() : m_display(NULL)
 {
@@ -40,7 +43,7 @@ void X11ScrCapturerImpl::initX11()
 bool X11ScrCapturerImpl::getScreenshot(const CRectangle& _region, 
 						std::vector<char>& _outBuffer)
 {
-	std::cout << __FUNCTION__ << std::endl;
+	//std::cout << __FUNCTION__ << std::endl;
 
 	/*
 	XImage *image = XGetImage(m_display,
@@ -68,9 +71,14 @@ bool X11ScrCapturerImpl::getScreenshot(const CRectangle& _region,
 		return false;
 	}
 
-	std::cout << "XGetImage success" <<std::endl;
+	//std::cout << "XGetImage success" <<std::endl;
 
-	_outBuffer.resize(m_attributes.width * m_attributes.height * _region.getBytesPerPixel());
+	//_outBuffer.resize(m_attributes.width * m_attributes.height * _region.getBytesPerPixel());
+	_outBuffer.resize(_region.getSize().m_x * _region.getSize().m_y * _region.getBytesPerPixel());
+
+	std::memcpy(_outBuffer.data(), image->data, _outBuffer.size());
+
+	XDestroyImage(image);
 
 	return true;
 }
