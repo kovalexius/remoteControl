@@ -4,7 +4,6 @@
 #include <vector>
 
 #include <X11/Xlib.h>
-//#include <X11/Xatom.h>
 
 #include "types/geometry_types.h"
 
@@ -14,14 +13,17 @@ public:
 	X11ScrCapturerImpl();
 	~X11ScrCapturerImpl();
 	
-	bool getScreenshot(const CRectangle& _region, 
+	bool getScreenshot(CRectangle& _region, 
 						std::vector<char>& _outBuffer);
+
+	CRectangle& getRectangle();
 private:
 	void initX11();
 
 	Display* m_display;
 	Window m_root;
-	XWindowAttributes m_attributes;
+
+	CRectangle m_region;
 };
 
 #endif

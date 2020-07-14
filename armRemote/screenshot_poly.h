@@ -16,7 +16,8 @@
 class ScrCaptureBase
 {
 public:
-	virtual bool GetScrCapture(const CRectangle& _region, std::vector<char>& _outbuffer) = 0;
+	virtual bool GetScrCapture(CRectangle& _region, std::vector<char>& _outbuffer) = 0;
+	virtual CRectangle& getRectangle() = 0;
 };
 
 
@@ -66,12 +67,18 @@ private:
 class SdlScrCapture : public ScrCaptureBase
 {
 public:
-	bool GetScrCapture(const CRectangle& _region, std::vector<char>& _outbuffer) override
+	bool GetScrCapture(CRectangle& _region, std::vector<char>& _outbuffer) override
 	{
 		if(!m_shooter.getScreenshot(_region, _outbuffer))
 			return false;
 		return true;
 	}
+
+	CRectangle& getRectangle() override
+	{
+		return m_shooter.getRectangle();
+	}
+
 private:
 	SDLScrCapturerImpl m_shooter;
 };
@@ -79,11 +86,16 @@ private:
 class X11ScrCapture : public ScrCaptureBase
 {
 public:
-	bool GetScrCapture(const CRectangle& _region, std::vector<char>& _outbuffer) override
+	bool GetScrCapture(CRectangle& _region, std::vector<char>& _outbuffer) override
 	{
 		if(!m_shooter.getScreenshot(_region, _outbuffer))
 			return false;
 		return true;
+	}
+
+	CRectangle& getRectangle() override
+	{
+		return m_shooter.getRectangle();
 	}
 
 private:

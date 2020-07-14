@@ -14,7 +14,7 @@
 class VNCServer
 {
 public:
-	VNCServer(const CRectangle& _region, std::shared_ptr<ScrCaptureBase>& _shooter);
+	VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter);
 	virtual ~VNCServer();
 
 	void run();

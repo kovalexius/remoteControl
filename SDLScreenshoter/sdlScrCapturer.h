@@ -10,11 +10,13 @@
 class SDLScrCapturerImpl
 {
 public:
-    //explicit SDLScrCapturerImpl(const CRectangle& _region);
     SDLScrCapturerImpl();
+    ~SDLScrCapturerImpl();
 
     bool getScreenshot(const CRectangle& _region, 
 						std::vector<char>& _outBuffer);
+
+    CRectangle&  getRectangle();
 private:
     void initSdl();
 
@@ -23,7 +25,6 @@ private:
     SDL_Renderer* m_renderer;
 
     CRectangle m_region;
-
 };
 
 #endif

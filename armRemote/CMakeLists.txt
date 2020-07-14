@@ -42,6 +42,8 @@ endif()
 
 
 add_executable(armRemote
+				${CMAKE_CURRENT_SOURCE_DIR}/../JShot/common/types/geometry_types.cpp
+
 				${CMAKE_CURRENT_SOURCE_DIR}/server.cpp
 				${CMAKE_CURRENT_SOURCE_DIR}/server.h
 				${CMAKE_CURRENT_SOURCE_DIR}/server_holder.cpp

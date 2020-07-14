@@ -1,11 +1,14 @@
 #include "server.h"
 #include "server_holder.h"
 
+#include <iostream>
 
-VNCServer::VNCServer(const CRectangle& _region, std::shared_ptr<ScrCaptureBase>& _shooter) :
-													m_region(_region),
-													m_shooter(_shooter)
+
+VNCServer::VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter) :
+							m_shooter(_shooter)
 {
+	m_region = m_shooter->getRectangle();
+
 	m_rfbScreen = rfbGetScreen(nullptr,
 								nullptr, 
 								m_region.getSize().m_x, 
@@ -42,11 +45,24 @@ void VNCServer::run()
 	//rfbRunEventLoop(m_rfbScreen, 4000, FALSE);
 	//rfbRunEventLoop(m_rfbScreen, 4000, TRUE); //background mode. It needs pthread library, but I haven't it on windows
 
+	CRectangle region; 
 	while (rfbIsActive(m_rfbScreen))
 	{
 		std::vector<char> buffer;
-		if (!m_shooter->GetScrCapture(m_region, buffer))
+		if (!m_shooter->GetScrCapture(region, buffer))
 			return;
+
+		if(region != m_region)
+		{
+			std::cout << "region != m_region" << std::endl;
+			m_region = region;
+			unsigned char* oldfb = (unsigned char*)m_rfbScreen->frameBuffer;
+			unsigned char* newfb = (unsigned char*)malloc(m_region.getSize().m_x * m_region.getSize().m_y * m_region.getBytesPerPixel());
+			initBuffer(newfb);
+			rfbNewFramebuffer(m_rfbScreen, (char*)newfb, m_region.getSize().m_x, m_region.getSize().m_y, 8, 3, m_region.getBytesPerPixel());
+			free(oldfb);
+		}
+
 		std::memcpy(m_rfbScreen->frameBuffer, buffer.data(), buffer.size());
 		rfbMarkRectAsModified(m_rfbScreen, 0, 0, m_region.getSize().m_x, m_region.getSize().m_y);
 

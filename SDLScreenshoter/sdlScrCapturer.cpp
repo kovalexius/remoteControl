@@ -6,15 +6,18 @@
 
 #include <X11/Xlib.h>
 
-//SDLScrCapturer::SDLScrCapturer(const CRectangle& _region) :
-//                                                            m_region(_region)
-//{
-//initSdl();
-//}
 
 SDLScrCapturerImpl::SDLScrCapturerImpl()
 {
-	//initSdl();
+	initSdl();
+}
+
+SDLScrCapturerImpl::~SDLScrCapturerImpl()
+{
+	SDL_DestroyRenderer(m_renderer);
+	SDL_DestroyWindow(m_sdlWindow);
+
+	SDL_Quit();
 }
 
 void SDLScrCapturerImpl::initSdl()
@@ -43,7 +46,7 @@ void SDLScrCapturerImpl::initSdl()
 	else
 	{
 		std::cout << "SDL_GetDesktopDisplayMode success" << std::endl;
-		std::cout << "format: " << m_displayMode.format << std::endl <<
+		std::cout << "format: " << SDL_GetPixelFormatName(m_displayMode.format) << std::endl <<
 					"w: " << m_displayMode.w << std::endl <<
 					"h: " << m_displayMode.h << std::endl <<
 					"refresh_rate: " << m_displayMode.refresh_rate << std::endl <<
@@ -54,7 +57,6 @@ void SDLScrCapturerImpl::initSdl()
 	//if(display)
 	//	m_displayMode.driverdata = (void*)display;
 
-	//m_displayMode.driverdata = (void*)0;
 	SDL_Window* m_sdlWindow = SDL_CreateWindowFrom(m_displayMode.driverdata);
 	if(m_sdlWindow == NULL)
 	{
@@ -83,23 +85,6 @@ bool SDLScrCapturerImpl::getScreenshot(const CRectangle& _region,
 {
 	std::cout << __FUNCTION__ << std::endl;
 
-	if(m_region != _region)
-	{
-		try
-		{
-			m_region = _region;
-			initSdl();
-		}
-		catch(const std::exception& e)
-		{
-			//std::cout << e.what() << '\n';
-		}
-		catch(...)
-		{
-			std::cout << "Undefined exception" << std::endl;
-		}
-	}
-
 	// Create SDL_Surface with depth of 32 bits
 	SDL_Surface *
 	_surface = SDL_CreateRGBSurface( 0, _region.getSize().m_x, _region.getSize().m_y, _region.getBitsPerPixel(), 0, 0, 0, 0 );
@@ -108,7 +93,7 @@ bool SDLScrCapturerImpl::getScreenshot(const CRectangle& _region,
 	if (_surface == NULL)
 	{
 		auto msg = std::string("Cannot create SDL_Surface: ") + std::string(SDL_GetError());
-		throw std::runtime_error(msg);
+		return false;
 	}
 
 	// Get data from SDL_Renderer and save them into surface
