@@ -16,7 +16,8 @@ int main(int argc,char** argv)
 	//std::shared_ptr<ScrCaptureBase> scrCapture(std::make_shared<SdlScrCapture>());
 	std::shared_ptr<ScrCaptureBase> scrCapture(std::make_shared<X11ScrCapture>());
 #endif
-	auto server = ServerHolder::get(scrCapture);
+	//auto server = ServerHolder::get(scrCapture);
+	auto server = ServerHolder::get(scrCapture, std::string("localhost"), 5501);
 	server->run();
 	
 	return(0);

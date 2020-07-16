@@ -528,11 +528,13 @@ int main(int argc, char** argv)
            cl->listen6Port = LISTEN_PORT_OFFSET;
 
            cl->serverHost = "localhost";
+           cl->serverPort = 5901;
            
            if(!rfbInitClient(cl,&argc,argv))
            {
-               cl = NULL; /* rfbInitClient has already freed the client struct */
-               cleanup(cl);
+                cleanup(cl);
+                cl = NULL; /* rfbInitClient has already freed the client struct */
+               
                break;
            }
  

@@ -15,8 +15,11 @@ class VNCServer
 {
 public:
 	VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter);
+	VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter,
+				const std::string& _host, int port);
 	virtual ~VNCServer();
 
+	void init();
 	void run();
 private:
 	void initBuffer(unsigned char* buffer);

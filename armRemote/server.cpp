@@ -7,6 +7,33 @@
 VNCServer::VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter) :
 							m_shooter(_shooter)
 {
+	init();
+	rfbInitServer(m_rfbScreen);
+}
+
+VNCServer::VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter,
+			const std::string& _host,
+			int _port) : 
+							m_shooter(_shooter)
+{
+	init();
+	std::vector<char> host(_host.begin(), _host.end());
+	rfbConnect(m_rfbScreen, host.data(), _port);
+}
+
+VNCServer::~VNCServer()
+{
+	if (!m_rfbScreen)
+		return;
+
+	if (m_rfbScreen->frameBuffer)
+		free(m_rfbScreen->frameBuffer);
+
+	rfbScreenCleanup(m_rfbScreen);
+}
+
+void VNCServer::init()
+{
 	m_region = m_shooter->getRectangle();
 
 	m_rfbScreen = rfbGetScreen(nullptr,
@@ -25,23 +52,12 @@ VNCServer::VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter) :
 	m_rfbScreen->alwaysShared = TRUE;
 	//m_rfbScreen->ptrAddEvent = doptr;
 	//m_rfbScreen->kbdAddEvent;
-	m_rfbScreen->displayHook = doDisplayHook;
-}
-
-VNCServer::~VNCServer()
-{
-	if (!m_rfbScreen)
-		return;
-
-	if (m_rfbScreen->frameBuffer)
-		free(m_rfbScreen->frameBuffer);
-
-	rfbScreenCleanup(m_rfbScreen);
+	//m_rfbScreen->displayHook = doDisplayHook;
 }
 
 void VNCServer::run()
 {
-	rfbInitServer(m_rfbScreen);
+	
 	//rfbRunEventLoop(m_rfbScreen, 4000, FALSE);
 	//rfbRunEventLoop(m_rfbScreen, 4000, TRUE); //background mode. It needs pthread library, but I haven't it on windows
 
