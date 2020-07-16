@@ -472,21 +472,18 @@ static rfbCredential* get_credential(rfbClient* cl, int credentialType)
 
         return c;
 }
+
+#undef main
  
- 
- #ifdef mac
- #define main SDLmain
- #endif
- 
- int main(int argc, char** argv)
- {
+int main(int argc, char** argv)
+{
         rfbClient* cl;
         int i, j;
         SDL_Event e;
  
- #ifdef LOG_TO_FILE
+#ifdef LOG_TO_FILE
         rfbClientLog=rfbClientErr=log_to_file;
- #endif
+#endif
  
         for (i = 1, j = 1; i < argc; i++)
         {
