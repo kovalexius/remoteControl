@@ -38,6 +38,10 @@ include_directories(
 
 add_executable(vncAdmin
 				${CMAKE_CURRENT_SOURCE_DIR}/SDLvncviewer.cpp
+				${CMAKE_CURRENT_SOURCE_DIR}/common_helpers.cpp
+				${CMAKE_CURRENT_SOURCE_DIR}/sdl_client.cpp
+				${CMAKE_CURRENT_SOURCE_DIR}/log_to_file.cpp
+				${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
                 )
 
 if (MSVC)	

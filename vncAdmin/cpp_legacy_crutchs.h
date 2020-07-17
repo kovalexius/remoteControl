@@ -20,8 +20,8 @@ char fromBinary(int x)
 	((x / 01000000ul) % 010)*(2<<5) +                \
 	((x / 010000000ul) % 010)*(2<<6)                 \
 	)
-#else
-#endif
+
+//#else
 
 #define BIN8(x) BIN___(0##x)
 
@@ -37,7 +37,7 @@ char fromBinary(int x)
 #define BIN64(x1,x2,x3,x4,x5,x6,x7,x8) \
     ((__int64(BIN32(x1,x2,x3,x4)) << 32) + __int64(BIN32(x5,x6,x7,x8)))
 
-
+#endif
 
 
 template< char FIRST, char... REST > struct binary
