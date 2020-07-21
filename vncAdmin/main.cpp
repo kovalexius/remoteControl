@@ -1,10 +1,11 @@
-#include "SDLvncviewer.h"
+#include "vnc_client.h"
+#include "sdl_viewer.h"
 
 #include <string>
 #include <string.h>
 
-#undef main
 
+//#undef main
 int main(int argc, char** argv)
 {
 	bool viewOnly = false;
@@ -34,8 +35,20 @@ int main(int argc, char** argv)
 		}
 	}
 
-	run();
+	CVncClient client(host, port);
+	client.run();
 	
+	//*
+	CSdlViewer view;
+	view.resize("AdminKit", 300, 300, 8);
+
+	while (true)
+	{
+		if (!view.DoTurn())
+			break;
+		//view.resize(400, 350, 8);
+	}
+	/**/
 
 	return 0;
 }

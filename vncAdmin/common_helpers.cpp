@@ -1,7 +1,7 @@
-#include "common_helpers.h"
+ï»¿#include "common_helpers.h"
 
 
-// Ïîëüçîâàòåëüñêèå ëèòåðàëû
+// ÐŸÐ¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒÑÐºÐ¸Ðµ Ð»Ð¸Ñ‚ÐµÑ€Ð°Ð»Ñ‹
 // https://habr.com/ru/post/140357/
 // http://rsdn.org/article/qna/Cpp/bin.xml
 
@@ -35,7 +35,7 @@ Utf8Mapping utf8Mapping[] = {
 		{ 0, 0 }
 };
 
-rfbKeySym SDL_key2rfbKeySym(SDL_KeyboardEvent* e)
+rfbKeySym SDL_key2rfbKeySym(const SDL_KeyboardEvent* e)
 {
 	rfbKeySym k = 0;
 	SDL_Keycode sym = e->keysym.sym;
@@ -118,16 +118,19 @@ rfbKeySym SDL_key2rfbKeySym(SDL_KeyboardEvent* e)
 
 
 /* UTF-8 decoding is from https://rosettacode.org/wiki/UTF-8_encode_and_decode which is under GFDL 1.2 */
-rfbKeySym utf8char2rfbKeySym(const char chr[4])
+rfbKeySym utf8char2rfbKeySym(const std::string& _chr)
 {
-	int bytes = strlen(chr);
+	int bytes = _chr.length();
 	int shift = utf8Mapping[0].bits_stored * (bytes - 1);
-	rfbKeySym codep = (*chr++ & utf8Mapping[bytes].mask) << shift;
+
+	// ÐŸÐµÑ€ÐµÐ´ÐµÐ»Ð°Ñ‚ÑŒ Ð½Ð°Ñ…ÑƒÐ¹!
+	const char *ptr = _chr.c_str();
+	rfbKeySym codep = (*ptr++ & utf8Mapping[bytes].mask) << shift;
 	int i;
-	for (i = 1; i < bytes; ++i, ++chr)
+	for (i = 1; i < bytes; ++i, ++ptr)
 	{
 		shift -= utf8Mapping[0].bits_stored;
-		codep |= ((char)*chr & utf8Mapping[0].mask) << shift;
+		codep |= ((char)*ptr & utf8Mapping[0].mask) << shift;
 	}
 	return codep;
 }
@@ -153,12 +156,12 @@ void cleanup(rfbClient* cl)
 }
 
 /* trivial support for textchat */
-void text_chat(rfbClient* cl, int value, char *text)
+void text_chat(rfbClient* _cl, int value, char *text)
 {
 	switch (value) {
 	case rfbTextChatOpen:
 		fprintf(stderr, "TextChat: We should open a textchat window!\n");
-		TextChatOpen(cl);
+		TextChatOpen(_cl);
 		break;
 	case rfbTextChatClose:
 		fprintf(stderr, "TextChat: We should close our window!\n");

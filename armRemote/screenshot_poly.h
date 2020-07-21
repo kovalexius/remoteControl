@@ -28,7 +28,7 @@ public:
 	GDIScrCapture(const CRectangle& _region) : m_shooter(_region)
 	{}
 
-	bool GetScrCapture(const CRectangle& _region, std::vector<char>& _outbuffer) override
+	bool GetScrCapture(CRectangle& _region, std::vector<char>& _outbuffer) override
 	{
 		if (!m_shooter.getScreenshot(_region, _outbuffer))
 			return false;
@@ -41,11 +41,15 @@ private:
 class DXScrCapture : public ScrCaptureBase
 {
 public:
-	bool GetScrCapture(const CRectangle& _region, std::vector<char>& _outbuffer) override
+	bool GetScrCapture(CRectangle& _region, std::vector<char>& _outbuffer) override
 	{
 		if (!m_shooter.GetScreenShot(_region, _outbuffer))
 			return false;
 		return true;
+	}
+	CRectangle& getRectangle() override
+	{
+		return m_shooter.GetRectangle();
 	}
 private:
 	CDxScreenShooter m_shooter;
@@ -54,7 +58,7 @@ private:
 class DDrawScrCapture : public ScrCaptureBase
 {
 public:
-	bool GetScrCapture(const CRectangle& _region, std::vector<char>& _outbuffer) override
+	bool GetScrCapture(CRectangle& _region, std::vector<char>& _outbuffer) override
 	{
 		if (!m_shooter.GetScreenShot(_region, _outbuffer))
 			return false;

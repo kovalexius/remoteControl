@@ -4,7 +4,9 @@
 #include <string>
 #include <stdexcept>
 
+#ifdef __linux__
 #include <X11/Xlib.h>
+#endif
 
 
 SDLScrCapturerImpl::SDLScrCapturerImpl()

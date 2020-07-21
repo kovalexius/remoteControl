@@ -9,10 +9,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../SDL2-2.0.12/
 if(NOT TARGET SDL2-static AND NOT TARGET SDL2main)
 	set(SDL_STATIC_ENABLED_BY_DEFAULT ON)
 	set(SDL_STATIC ON)
+	add_definitions(-DSDL_MAIN_HANDLED)
 	add_subdirectory(
 				${CMAKE_CURRENT_SOURCE_DIR}/../SDL2-2.0.12/ SDL2
 				#EXCLUDE_FROM_ALL
 				)
+	#remove_definitions(-DSDL_MAIN_HANDLED)
 endif()
 
 include_directories(
