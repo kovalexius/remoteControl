@@ -17,8 +17,7 @@ VNCServer::VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter,
 							m_shooter(_shooter)
 {
 	init();
-	std::vector<char> host(_host.begin(), _host.end());
-	rfbConnect(m_rfbScreen, host.data(), _port);
+	rfbConnect(m_rfbScreen, strdup(_host.c_str()), _port);
 }
 
 VNCServer::~VNCServer()
