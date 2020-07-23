@@ -4,6 +4,7 @@
 #include <string>
 #include <exception>
  
+#include <signal.h>
 #include "common_helpers.h"
 #include "log_to_file.h"
 
@@ -15,6 +16,9 @@ CSdlViewer::CSdlViewer() : m_sdlSurface(nullptr),
 							m_desktopName("window")
 {
 	m_sdlFlags = SDL_WINDOW_RESIZABLE;
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE);
+	atexit(SDL_Quit);
+	signal(SIGINT, exit);
 }
 
 CSdlViewer::~CSdlViewer()
@@ -50,13 +54,28 @@ SDL_Surface* CSdlViewer::getSurface()
 	return m_sdlSurface;
 }
 
-SDL_Surface* CSdlViewer::resize(const std::string& _desktopName, const int _width, const int _height, const int _depth)
+void CorrectWindowSize(int& _width, int& _height)
+{
+	SDL_DisplayMode displayMode;
+
+	if (!SDL_GetCurrentDisplayMode(0, &displayMode))
+	{
+		if (_width > displayMode.w - 50)
+			_width = displayMode.w - 50;
+		if (_height > displayMode.h - 50)
+			_height = displayMode.h - 50;
+	}
+}
+
+SDL_Surface* CSdlViewer::resize(const std::string& _desktopName, int& _width, int& _height, const int _depth)
 {
 	if (m_sdlSurface)
 	{
 		SDL_FreeSurface(m_sdlSurface);
 		m_sdlSurface = nullptr;
 	}
+
+	CorrectWindowSize(_width, _height);
 
 	m_sdlSurface = SDL_CreateRGBSurface(0,
 		_width,

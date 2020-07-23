@@ -13,7 +13,7 @@ public:
 	~CSdlViewer();
 
 	SDL_Surface* getSurface();
-    SDL_Surface* resize(const std::string& _desktopName, const int _width, const int _height, const int _depth);
+    SDL_Surface* resize(const std::string& _desktopName, int& _width, int& _height, const int _depth);
     void update(int x,int y,int w,int h);
 	bool  DoTurn();
 

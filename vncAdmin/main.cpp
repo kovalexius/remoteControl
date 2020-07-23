@@ -35,17 +35,20 @@ int main(int argc, char** argv)
 		}
 	}
 
-	CVncClient client(host, port);
+	//CVncClient client;
+	//CVncClient client(host, port);
+	//CVncClient client(host, port, "localhost", 5501);
+	CVncClient client(host, port, "arm1");
 	client.run();
 	
-	//*
+	/*
 	CSdlViewer view;
 	view.resize("AdminKit", 300, 300, 8);
 
 	while (true)
 	{
-		if (!view.DoTurn())
-			break;
+		//if (!view.DoTurn())
+		//	break;
 		//view.resize(400, 350, 8);
 	}
 	/**/

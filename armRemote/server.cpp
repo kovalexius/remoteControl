@@ -17,7 +17,57 @@ VNCServer::VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter,
 							m_shooter(_shooter)
 {
 	init();
+	rfbInitSockets(m_rfbScreen);
+	rfbHttpInitSockets(m_rfbScreen);
 	rfbConnect(m_rfbScreen, strdup(_host.c_str()), _port);
+}
+
+
+static void clientGone(rfbClientPtr cl)
+{
+	std::cout << std::endl << "Client Gone" << std::endl;
+	//rfbShutdownServer(cl->screen, TRUE);
+}
+
+VNCServer::VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter,
+	const std::string& _host, int _port,
+	const std::string& _idConnect) :
+									m_shooter(_shooter)
+{
+	init();
+	m_rfbScreen->port = -1;
+	m_rfbScreen->ipv6port = -1;
+	rfbInitSockets(m_rfbScreen);
+	//rfbHttpInitSockets(m_rfbScreen);
+	//auto sock = rfbConnect(m_rfbScreen, strdup(_host.c_str()), _port);
+	auto sock = rfbConnectToTcpAddr(strdup(_host.c_str()), _port);
+	if (sock == RFB_INVALID_SOCKET)
+	{
+		std::cout << "failed rfbConnectToTcpAddr" << std::endl;
+	}
+
+	char buf[250];
+	memset(buf, 0, sizeof(buf));
+	if (snprintf(buf, sizeof(buf), "ID:%s", _idConnect.c_str()) >= (int)sizeof(buf))
+	{
+		std::cout << "Error, given ID is too long." << std::endl;
+	}
+	if (send(sock, buf, sizeof(buf), 0) != sizeof(buf))
+	{
+		std::cout << "Failed to send 'ID'" << std::endl;
+	}
+
+	//*
+	rfbClientPtr cl = rfbNewClient(m_rfbScreen, sock);
+	if (!cl)
+	{
+		std::cout << "failed rfbNewClient" << std::endl;
+	}
+	cl->reverseConnection = 0;
+	cl->clientGoneHook = clientGone;
+	/**/
+
+	//rfbInitServer(m_rfbScreen);
 }
 
 VNCServer::~VNCServer()

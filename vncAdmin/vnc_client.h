@@ -13,9 +13,11 @@ class CVncClient
 {
 public:
 	CVncClient();
-	CVncClient(const std::string& _host, int _port);
+	CVncClient(const std::string& _host, const int _port);
+	CVncClient(const std::string& _repeaterHost, const int _repeaterPort, const std::string& _desthost, const int _destport);
+	CVncClient(const std::string& _repeaterHost, const int _repeaterPort, const std::string& _idConnect);
 
-	~CVncClient();
+	virtual ~CVncClient();
 
 	void run();
 
@@ -34,7 +36,8 @@ private:
 	void OnKeyboardFocus(const std::string& _text);
 	void OnWindowFocusLost(const bool _rightAltDown, const bool _leftAltDown);
 
-	void init();
+	void initCallbacks(rfbClient* _cl);
+	void initConnection(rfbClient* _cl);
 
 	rfbClient* m_cl;
 	CSdlViewer m_window;

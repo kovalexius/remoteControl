@@ -12,3 +12,12 @@ https://sourceforge.net/projects/pthreads4w/
 
 и отсюда:
 https://www.sourceware.org/pthreads-win32/
+
+
+Утилита socat:
+http://www.dest-unreach.org/socat/doc/linuxwochen2007-socat.pdf
+
+Исходники ultraVnc repeater:
+https://www.uvnc.com/downloads/repeater/83-repeater-downloads.html
+
+Perl'овая версия репитера лежит в репозитории.
