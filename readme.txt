@@ -21,3 +21,6 @@ http://www.dest-unreach.org/socat/doc/linuxwochen2007-socat.pdf
 https://www.uvnc.com/downloads/repeater/83-repeater-downloads.html
 
 Perl'овая версия репитера лежит в репозитории.
+
+И еще что-то про vnc repeater:
+https://hostadmina.ru/blog/linux/shell/ustanovka-i-nastrojka-vnc-repeater-v-linux.html
