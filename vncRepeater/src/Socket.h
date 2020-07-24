@@ -7,11 +7,12 @@ class Socket
 {
 public:
 	Socket();
-	Socket(const int _port);
-	Socket(const std::string& _address, const int _port);
 	virtual ~Socket();
 
-	int Get();
+	Socket(const Socket&) = delete;
+	Socket& operator=(const Socket&) = delete;
+
+	int Get() const;
 private:
 	int m_socket;
 };

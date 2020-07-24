@@ -7,8 +7,26 @@ relay(репитер) слушает два разных порта.
 сообщения с одного порта на другой. Перенаправление будет существовать до тех пор, пока одно из соединений не отвалится.
 */
 
+#include <iostream>
+#include <exception>
+
+#include "Listener.h"
+
 
 int main()
 {
+	try
+	{
+	Listener listener(54320, 54321);
+	listener.doWork();
 
+	std::cin.get();
+	}
+	catch(std::exception& _e)
+	{
+		std::cout << _e.what() << std::endl;
+	}
+
+	std::cin.get();
+	return 0;
 }
