@@ -17,7 +17,7 @@
 constexpr int LISTEN_BACKLOG = 1024;
 
 
-void bind_socket(const Socket& _socket,
+bool bind_socket(const Socket& _socket,
 					const std::string& _iface_addr,
                     const int _iface_port)
 {
@@ -39,11 +39,40 @@ void bind_socket(const Socket& _socket,
 	bind_addr.sin_port = htons(_iface_port);
     
 	if(bind(_socket.Get(), (struct sockaddr*)&bind_addr, sizeof(bind_addr)) < 0)
+	{
         throw std::runtime_error(strerror(errno));
+		return false;
+	}
+
+	return true;
 }
 
-void listen_socket(const Socket& _socket)
+bool listen_socket(const Socket& _socket)
 {
 	if(listen(_socket.Get(), LISTEN_BACKLOG) < 0)
+	{
 		throw std::runtime_error(strerror(errno));
+		return false;
+	}
+	return true;
+}
+
+bool accept_socket(const Socket& _listenSocket, Socket& _dataSocket, std::string& _peerAddr)
+{
+	struct sockaddr_in local;
+    socklen_t addrlen = sizeof(local);
+    int data_sock = accept(_listenSocket.Get(), (struct sockaddr *)&local, &addrlen);
+	if(data_sock > 0)
+		_dataSocket = data_sock;
+	else
+	{
+		throw std::runtime_error(strerror(errno));
+		return false;
+	}
+
+	char* strAddr = inet_ntoa(local.sin_addr);
+	if(strAddr)
+		_peerAddr.assign(strAddr);
+
+	return true;
 }

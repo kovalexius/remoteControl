@@ -10,7 +10,8 @@ class Iface
 {
 public:
 	Iface(const int _port);
-	Socket& incoming();
+	Socket& Listen();
+	bool Accept();
 private:
 	std::map<std::string, Socket> m_listId;
 	Socket m_listenSocket;

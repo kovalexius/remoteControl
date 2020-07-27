@@ -7,7 +7,8 @@ add_executable(remoteControlRelay
 				src/Socket.cpp
 				src/common.cpp
 				src/Listener.cpp
-				src/interface.cpp)
+				src/interface.cpp
+				src/thread.cpp)
 
 if (MSVC)
 	target_link_libraries(remoteControlRelay
