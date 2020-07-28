@@ -32,10 +32,10 @@ int main()
 	}
 	*/
 
-	Socket sock1();
-	Socket sock2();
-	Socket sock3();
-	Socket sock4();
+	Socket sock1;
+	Socket sock2(std::move(sock1));
+	Socket sock3;
+	Socket sock4;
 
 	std::vector<Socket> sockList;
 	sockList.push_back(std::move(sock4));

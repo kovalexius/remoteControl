@@ -31,7 +31,7 @@ Socket::Socket(const int _socket) : m_socket(_socket)
 
 Socket::~Socket()
 {
-	std::cout << "Destructor" << std::endl;
+	std::cout << std::endl << "Destructor" << std::endl;
 	closeSocket();
 }
 
@@ -40,6 +40,7 @@ Socket::Socket(Socket&& _other)
 {
 	m_socket = _other.m_socket;
 	_other.m_socket = -1;
+	std::cout << __FUNCTION__ << "(&&) m_socket: " << m_socket << std::endl;
 }
 Socket& Socket::operator=(Socket&& _other)
 {
@@ -56,7 +57,7 @@ void Socket::closeSocket()
 {
 	if(m_socket != -1)
 	{
-		std::cout << "Close socket" << std::endl;
+		std::cout << "Close socket: " << m_socket << std::endl;
 		CloseSocket(m_socket);
 		m_socket = -1;
 	}

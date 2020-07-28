@@ -1,6 +1,7 @@
 #include "id_receiver.h"
 
 #include <exception>
+#include <iostream>
 
 #include <sys/epoll.h>
 #include <unistd.h>
@@ -34,7 +35,7 @@ bool CIdReceiver::AddSocket(Socket& _socket)
     {
         throw std::runtime_error(strerror(errno));
     }
-	//m_socks.emplace(_socket.Get(), std::move(_socket));
+
     m_socks.insert({_socket.Get(), std::move(_socket)});
 }
 
@@ -54,9 +55,10 @@ void CIdReceiver::Worker()
                 process_hup_events(events[i]);
                 continue;
             }
-			/*
+
             if(events[i].events & EPOLLIN)         // ready to read or accept connections
-                _process_input_events(events[i]);
+                process_input_events(events[i]);
+			/*
             if(events[i].events & EPOLLOUT )        // ready to write or connect was established
                 _process_output_events(events[i]);
 				*/
@@ -65,32 +67,46 @@ void CIdReceiver::Worker()
     }
 }
 
-void CIdReceiver::process_hup_events(const struct epoll_event &evnt)
+void CIdReceiver::process_hup_events(const struct epoll_event &_evnt)
 {
-    int cur_sock = evnt.data.fd;
+    int cur_sock = _evnt.data.fd;
+
+	std::lock_guard<std::mutex> lk(m_mutex);
     auto it = m_socks.find(cur_sock);
     if(it != m_socks.end())
     {
 		if(::epoll_ctl(m_efd, EPOLL_CTL_DEL, cur_sock, NULL) == -1)
     	{
+			std::cout << "epoll_ctl failed: " << strerror(errno) << std::endl;
         	throw std::string(strerror(errno));
     	}
 
-        //::close(cur_sock);
-        //m_error_handle(CONNECT_ERROR::DISCONNECTED, cur_sock);
-        std::lock_guard<std::mutex> lk(m_mutex);
         m_socks.erase(it);
         return;
     }
 }
 
-/*
-void read()
+
+void CIdReceiver::process_input_events(const struct epoll_event &_evnt)
 {
-	char buf[MESSAGE_MAX_LEN];
-	std::string msg;
-    auto recv_size = read(dataSocket.Get(), buf, MESSAGE_MAX_LEN);
-    if(recv_size > 0)
-    msg.insert(0, buf, recv_size);
+    int cur_sock = _evnt.data.fd;
+
+	auto it = m_socks.find(cur_sock);
+    if(it != m_socks.end())
+    {
+		static char recv_buf[MESSAGE_MAX_LEN];
+        std::string msg;
+        auto recv_size = ::read(cur_sock, recv_buf, MESSAGE_MAX_LEN);
+        if(recv_size > 0)
+            msg.insert(0, recv_buf, recv_size);
+        
+        if(m_receive_handle)
+            m_receive_handle(cur_sock, msg);
+        auto receive_handle_it = m_receive_handles_map.find(cur_sock);
+        if( receive_handle_it != m_receive_handles_map.end() )
+            receive_handle_it->second( msg );
+        auto receive_ex_handle_it = m_ex_receive_handles_map.find(cur_sock);
+        if( receive_ex_handle_it != m_ex_receive_handles_map.end() )
+            receive_ex_handle_it->second( cur_sock, msg );
+    }
 }
-*/

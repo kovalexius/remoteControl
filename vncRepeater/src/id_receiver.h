@@ -19,6 +19,7 @@ public:
 	bool AddSocket(Socket& _socket);
 private:
 	void process_hup_events(const struct epoll_event &evnt);
+	void process_input_events(const struct epoll_event &_evnt);
 
 	// epoll descriptor for signaling data receive
     int m_efd;
