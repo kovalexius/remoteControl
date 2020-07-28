@@ -4,8 +4,12 @@
 #include <iostream>
 
 #include <sys/types.h>
+#ifdef WIN32
+#include "winsock2.h"
+#else
 #include <sys/socket.h>
 #include <unistd.h>
+#endif
 
 #ifdef WIN32
 #define CloseSocket closesocket
@@ -13,20 +17,17 @@
 #define CloseSocket close
 #endif
 
-Socket::Socket()
+Socket::Socket() : m_socket(-1)
 {
 	if((m_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	{
         std::cout << "Couldn't create connection: new socket doesn't created" << std::endl;
-		m_socket = -1;
 	}
 	std::cout << __FUNCTION__ << " m_socket: " << m_socket << std::endl;
 }
 
-/*
 Socket::Socket(const int _socket) : m_socket(_socket)
 {}
-*/
 
 Socket::~Socket()
 {
@@ -61,11 +62,10 @@ void Socket::closeSocket()
 	}
 }
 
-Socket& Socket::Assign(const int _socket)
+void Socket::Assign(const int _socket)
 {
 	closeSocket();
 	m_socket = _socket;
-	return *this;
 }
 
 bool Socket::operator<(const Socket& _other)

@@ -12,7 +12,7 @@ public:
 	Socket(Socket&& _other);
 	Socket& operator=(Socket&& _other);
 
-	//Socket(const int _socket);
+	Socket(const int _socket);
 
 	virtual ~Socket();
 
@@ -23,7 +23,7 @@ public:
 	bool operator<(const Socket& _other);
 	
 	
-	Socket& Assign(const int _socket);
+	void Assign(const int _socket);
 	int Get() const;
 private:
 	void closeSocket();
