@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Socket.h"
+#include "id_receiver.h"
 
 class Iface
 {
@@ -13,6 +14,7 @@ public:
 	Socket& Listen();
 	bool Accept();
 private:
+	CIdReceiver m_receiver;
 	std::map<std::string, Socket> m_listId;
 	Socket m_listenSocket;
 	int m_port;

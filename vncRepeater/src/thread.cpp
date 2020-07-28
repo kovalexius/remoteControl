@@ -11,10 +11,7 @@ void CThread::Run()
 
 void CThread::threadFunc()
 {
-	while(m_isLaunched)
-	{
-		Iteration();
-	}
+	Worker();
 }
 
 CThread::~CThread()

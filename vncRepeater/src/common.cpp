@@ -63,7 +63,7 @@ bool accept_socket(const Socket& _listenSocket, Socket& _dataSocket, std::string
     socklen_t addrlen = sizeof(local);
     int data_sock = accept(_listenSocket.Get(), (struct sockaddr *)&local, &addrlen);
 	if(data_sock > 0)
-		_dataSocket = data_sock;
+		_dataSocket.Assign(data_sock);
 	else
 	{
 		throw std::runtime_error(strerror(errno));

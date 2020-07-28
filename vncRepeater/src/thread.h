@@ -10,11 +10,14 @@ public:
 	~CThread();
 
 	void Run();
-	virtual void Iteration()
+	virtual void Worker()
 	{}
+	
+protected:
+	bool m_isLaunched;
+
 private:
 	void threadFunc();
-	bool m_isLaunched;
 	std::thread m_thread;
 };
 

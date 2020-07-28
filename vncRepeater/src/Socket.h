@@ -7,17 +7,23 @@ class Socket
 {
 public:
 	Socket();
-	Socket(const int _socket);
+
+	// Семантика перемещения
+	Socket(Socket&& _other);
+	Socket& operator=(Socket&& _other);
+
+	//Socket(const int _socket);
+
 	virtual ~Socket();
 
 	// Копирующая семантика запрещается
 	Socket(const Socket&) = delete;
 	Socket& operator=(const Socket&) = delete;
 
-	Socket& operator=(const int _socket);
-
 	bool operator<(const Socket& _other);
-
+	
+	
+	Socket& Assign(const int _socket);
 	int Get() const;
 private:
 	void closeSocket();

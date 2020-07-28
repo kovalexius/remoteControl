@@ -16,17 +16,40 @@
 Socket::Socket()
 {
 	if((m_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	{
         std::cout << "Couldn't create connection: new socket doesn't created" << std::endl;
+		m_socket = -1;
+	}
+	std::cout << __FUNCTION__ << " m_socket: " << m_socket << std::endl;
 }
 
+/*
 Socket::Socket(const int _socket) : m_socket(_socket)
 {}
+*/
 
 Socket::~Socket()
 {
 	std::cout << "Destructor" << std::endl;
 	closeSocket();
 }
+
+// Семантика перемещения
+Socket::Socket(Socket&& _other)
+{
+	m_socket = _other.m_socket;
+	_other.m_socket = -1;
+}
+Socket& Socket::operator=(Socket&& _other)
+{
+	if(this == &_other)
+		return *this;
+
+	m_socket = _other.m_socket;
+	_other.m_socket = -1;
+	return *this;
+}
+
 
 void Socket::closeSocket()
 {
@@ -38,7 +61,7 @@ void Socket::closeSocket()
 	}
 }
 
-Socket& Socket::operator=(const int _socket)
+Socket& Socket::Assign(const int _socket)
 {
 	closeSocket();
 	m_socket = _socket;

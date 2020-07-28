@@ -9,12 +9,16 @@ relay(репитер) слушает два разных порта.
 
 #include <iostream>
 #include <exception>
+#include <utility>
+#include <vector>
 
+#include "Socket.h"
 #include "Listener.h"
 
 
 int main()
 {
+	/*
 	try
 	{
 	Listener listener(54320, 54321);
@@ -26,6 +30,16 @@ int main()
 	{
 		std::cout << _e.what() << std::endl;
 	}
+	*/
+
+	Socket sock1();
+	Socket sock2();
+	Socket sock3();
+	Socket sock4();
+
+	std::vector<Socket> sockList;
+	sockList.push_back(std::move(sock4));
+
 
 	std::cin.get();
 	return 0;
