@@ -4,14 +4,36 @@
 
 #include <poll.h>
 #include <string.h>
+#include <signal.h>
 
 #include "common.h"
+
+bool g_isLoop = true;
+
+void doStop(int _signal)
+{
+    g_isLoop = false;
+}
+
+void DefineSignals()
+{
+    struct sigaction act;
+    memset(&act, 0, sizeof(act));
+    act.sa_handler = &doStop;
+    if(sigaction(SIGHUP, &act, NULL) < 0)
+        std::cout << "Can't change SIGHUP handle" << std::endl;
+    if(sigaction(SIGINT, &act, NULL) < 0)
+        std::cout << "Can't change SIGINT handle" << std::endl;
+    if(sigaction(SIGTERM, &act, NULL) < 0)
+        std::cout << "Can't change SIGTERM handle" << std::endl;
+}
 
 Listener::Listener(const int _port1, 
 					const int _port2) : 
 							m_left(_port1), 
 							m_right(_port2)
 {
+    DefineSignals();
 }
 
 void Listener::doWork()
@@ -26,7 +48,7 @@ void Listener::doWork()
 	fds[1].fd = socketRight.Get();
 	fds[1].events = POLLIN;
 
-	while(true)
+	while(g_isLoop)
 	{
 		auto ret = poll(fds, 2, TIMEOUT);
 		if(ret == -1)

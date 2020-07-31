@@ -15,25 +15,34 @@ relay(репитер) слушает два разных порта.
 #include <vector>
 #include <set>
 
+#include <string.h>
+
 #include "Socket.h"
 #include "Listener.h"
 
 
-int main()
+int main(int argc, char** argv)
 {
-	//*
+    int leftport = 54320;
+    int rightport = 54321;
+
+    for (int i = 1; i < argc; i++)
+	{
+		if (!strcmp(argv[i], "-leftport") && i + 1 < argc)
+			leftport = std::stoi(argv[i + 1]);
+        else if (!strcmp(argv[i], "-rightport") && i + 1 < argc)
+            rightport = std::stoi(argv[i + 1]);
+	}
+
 	try
 	{
-	Listener listener(54320, 54321);
-	listener.doWork();
-
-	std::cin.get();
+	    Listener listener(leftport, rightport);
+	    listener.doWork();
 	}
 	catch(std::exception& _e)
 	{
 		std::cout << _e.what() << std::endl;
 	}
-	/**/
 
     /*
     Socket sock1;
@@ -48,7 +57,6 @@ int main()
     sockList.erase(sock3);
     /**/
 
-
-	std::cin.get();
+	//std::cin.get();
 	return 0;
 }
