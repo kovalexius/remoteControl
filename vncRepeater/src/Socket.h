@@ -2,13 +2,19 @@
 #define __SOCKET__H
 
 #include <string>
+#include <memory>
 
+class SocketImpl;
 class Socket
 {
 public:
 	Socket();
 
-	// Семантика перемещения
+    // Копирующая семантика
+	Socket(const Socket&);
+	Socket& operator=(const Socket&);
+
+	// Семантика перемещения запрещается
 	Socket(Socket&& _other);
 	Socket& operator=(Socket&& _other);
 
@@ -16,19 +22,13 @@ public:
 
 	virtual ~Socket();
 
-	// Копирующая семантика запрещается
-	Socket(const Socket&) = delete;
-	Socket& operator=(const Socket&) = delete;
-
-	bool operator<(const Socket& _other);
+	bool operator<(const Socket& _other) const;
 	
 	
 	void Assign(const int _socket);
 	int Get() const;
 private:
-	void closeSocket();
-
-	int m_socket;
+	std::shared_ptr<SocketImpl> m_socket;
 };
 
 #endif

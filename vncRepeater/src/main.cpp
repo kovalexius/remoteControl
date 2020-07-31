@@ -7,10 +7,13 @@ relay(репитер) слушает два разных порта.
 сообщения с одного порта на другой. Перенаправление будет существовать до тех пор, пока одно из соединений не отвалится.
 */
 
+// https://habr.com/ru/company/infopulse/blog/415259/
+
 #include <iostream>
 #include <exception>
 #include <utility>
 #include <vector>
+#include <set>
 
 #include "Socket.h"
 #include "Listener.h"
@@ -18,7 +21,7 @@ relay(репитер) слушает два разных порта.
 
 int main()
 {
-	/*
+	//*
 	try
 	{
 	Listener listener(54320, 54321);
@@ -30,15 +33,20 @@ int main()
 	{
 		std::cout << _e.what() << std::endl;
 	}
-	*/
+	/**/
 
-	Socket sock1;
-	Socket sock2(std::move(sock1));
-	Socket sock3;
-	Socket sock4;
+    /*
+    Socket sock1;
+    Socket sock2(std::move(sock1));
+    Socket sock2(sock1);
+    Socket sock3;
+    Socket sock4;
 
-	std::vector<Socket> sockList;
-	sockList.push_back(std::move(sock4));
+	std::set<Socket> sockList;
+	sockList.insert(sock3);
+    sockList.insert(sock4);
+    sockList.erase(sock3);
+    /**/
 
 
 	std::cin.get();

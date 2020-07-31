@@ -14,6 +14,10 @@ std::vector<char> CVncClient::g_tag;
 
 CVncClient::CVncClient() : m_cl(nullptr)
 {
+}
+
+void CVncClient::Connect()
+{
 	m_cl = rfbGetClient(8, 3, 4);
 	initCallbacks(m_cl);
 
@@ -21,7 +25,7 @@ CVncClient::CVncClient() : m_cl(nullptr)
 		rfbClientLog("rfbInitClient failed");
 }
 
-CVncClient::CVncClient(const std::string& _host, int _port)
+void CVncClient::Connect(const std::string& _host, int _port)
 {
 	m_cl = rfbGetClient(8, 3, 4);
 	initCallbacks(m_cl);
@@ -32,7 +36,7 @@ CVncClient::CVncClient(const std::string& _host, int _port)
 	initConnection(m_cl);
 }
 
-CVncClient::CVncClient(const std::string& _repeaterHost, const int _repeaterPort, const std::string& _desthost, const int _destport)
+void CVncClient::Connect(const std::string& _repeaterHost, const int _repeaterPort, const std::string& _desthost, const int _destport)
 {
 	m_cl = rfbGetClient(8, 3, 4);
 	initCallbacks(m_cl);
@@ -43,7 +47,7 @@ CVncClient::CVncClient(const std::string& _repeaterHost, const int _repeaterPort
 	initConnection(m_cl);
 }
 
-CVncClient::CVncClient(const std::string& _repeaterHost, const int _repeaterPort, const std::string& _idConnect)
+void CVncClient::Connect(const std::string& _repeaterHost, const int _repeaterPort, const std::string& _idConnect)
 {
 	m_cl = rfbGetClient(8, 3, 4);
 	initCallbacks(m_cl);
@@ -63,6 +67,7 @@ CVncClient::CVncClient(const std::string& _repeaterHost, const int _repeaterPort
 
 	initConnection(m_cl);
 }
+
 
 void CVncClient::initConnection(rfbClient* _cl)
 {
@@ -248,7 +253,7 @@ void CVncClient::OnWindowFocusLost(const bool _rightAltDown, const bool _leftAlt
 }
 
 
-void CVncClient::run()
+void CVncClient::Run()
 {
 	while (1)
 	{

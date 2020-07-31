@@ -14,6 +14,9 @@ int main(int argc, char** argv)
 
 	std::string host;
 	int port = 5901;
+    std::string id;
+    std::string repeaterHost;
+    int repeaterPort = 54320;
 
 	for (int i = 1; i < argc; i++)
 	{
@@ -26,20 +29,27 @@ int main(int argc, char** argv)
 		else if (!strcmp(argv[i], "-listen"))
 			listenLoop = true;
 		else if (!strcmp(argv[i], "-host") && i + 1 < argc)
-		{
-			host = argv[i + 1];
-		}
+			host = argv[i+1];
 		else if (!strcmp(argv[i], "-port") && i + 1 < argc)
-		{
 			port = std::stoi(argv[i + 1]);
-		}
+        else if (!strcmp(argv[i], "-id") && i + 1 < argc)
+            id = argv[i+1];
+        else if (!strcmp(argv[i], "-repeaterHost") && i + 1 < argc)
+            repeaterHost = argv[i+1];
+        else if (!strcmp(argv[i], "-repeaterPort") && i + 1 < argc)
+            repeaterPort = std::stoi(argv[i + 1]);
 	}
 
-	//CVncClient client;
-	//CVncClient client(host, port);
-	//CVncClient client(host, port, "localhost", 5501);
-	CVncClient client(host, port, "arm1");
-	client.run();
+	CVncClient client;
+    if(!repeaterHost.empty() && !id.empty())
+        client.Connect(repeaterHost, repeaterPort, id);
+    else if(!repeaterHost.empty() && !host.empty())
+        client.Connect(repeaterHost, repeaterPort, host, port);
+    else if(!host.empty())
+        client.Connect(host, port);
+    else
+        client.Connect();
+	client.Run();
 	
 	/*
 	CSdlViewer view;

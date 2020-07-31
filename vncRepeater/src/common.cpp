@@ -15,7 +15,7 @@
 
 
 constexpr int LISTEN_BACKLOG = 1024;
-
+constexpr int MESSAGE_MAX_LEN = 100;
 
 bool bind_socket(const Socket& _socket,
 					const std::string& _iface_addr,
@@ -27,12 +27,12 @@ bool bind_socket(const Socket& _socket,
 
 	if(_iface_addr.empty())
 	{
-		std::cout << "INADR_ANY" << std::endl;
+		//std::cout << "INADR_ANY" << std::endl;
 		bind_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	}
 	else
 	{
-		std::cout << "iface_addr: \'" << _iface_addr << "\'" << std::endl;
+		//std::cout << "iface_addr: \'" << _iface_addr << "\'" << std::endl;
 		bind_addr.sin_addr.s_addr = inet_addr(_iface_addr.c_str());
 	}
     
@@ -75,4 +75,13 @@ bool accept_socket(const Socket& _listenSocket, Socket& _dataSocket, std::string
 		_peerAddr.assign(strAddr);
 
 	return true;
+}
+
+
+bool read_socket(const Socket& _sock, std::string& _msg)
+{
+    char recv_buf[MESSAGE_MAX_LEN];
+    auto recv_size = read(_sock.Get(), recv_buf, MESSAGE_MAX_LEN);
+    if(recv_size > 0)
+        _msg.insert(0, recv_buf, recv_size);
 }

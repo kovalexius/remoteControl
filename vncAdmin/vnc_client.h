@@ -13,13 +13,14 @@ class CVncClient
 {
 public:
 	CVncClient();
-	CVncClient(const std::string& _host, const int _port);
-	CVncClient(const std::string& _repeaterHost, const int _repeaterPort, const std::string& _desthost, const int _destport);
-	CVncClient(const std::string& _repeaterHost, const int _repeaterPort, const std::string& _idConnect);
-
 	virtual ~CVncClient();
 
-	void run();
+    void Connect();
+    void Connect(const std::string& _host, const int _port);
+    void Connect(const std::string& _repeaterHost, const int _repeaterPort, const std::string& _desthost, const int _destport);
+    void Connect(const std::string& _repeaterHost, const int _repeaterPort, const std::string& _idConnect);
+
+	void Run();
 
 private:
 	void Update(rfbClient* _cl, int _x, int _y, int _w, int _h);

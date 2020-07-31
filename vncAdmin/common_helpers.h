@@ -18,8 +18,8 @@ struct Utf8Mapping
 };
 
 
-ButtonMapping buttonMapping[];
-Utf8Mapping utf8Mapping[];
+extern ButtonMapping buttonMapping[];
+extern Utf8Mapping utf8Mapping[];
 
 rfbKeySym SDL_key2rfbKeySym(const SDL_KeyboardEvent* e);
 

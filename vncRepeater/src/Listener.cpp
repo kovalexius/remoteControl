@@ -7,8 +7,6 @@
 
 #include "common.h"
 
-constexpr int TIMEOUT = 100;
-
 Listener::Listener(const int _port1, 
 					const int _port2) : 
 							m_left(_port1), 
@@ -18,9 +16,8 @@ Listener::Listener(const int _port1,
 
 void Listener::doWork()
 {
-	Socket& socketLeft = m_left.Listen();
-	Socket& socketRight = m_right.Listen();
-
+	Socket& socketLeft = m_left.Listen(&m_right);
+	Socket& socketRight = m_right.Listen(&m_left);
 
 	struct pollfd fds[2];
 	

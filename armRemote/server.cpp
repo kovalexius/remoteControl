@@ -7,14 +7,27 @@
 VNCServer::VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter) :
 							m_shooter(_shooter)
 {
-	init();
+}
+
+VNCServer::~VNCServer()
+{
+	if (!m_rfbScreen)
+		return;
+
+	if (m_rfbScreen->frameBuffer)
+		free(m_rfbScreen->frameBuffer);
+
+	rfbScreenCleanup(m_rfbScreen);
+}
+
+void VNCServer::Listen()
+{
+    init();
 	rfbInitServer(m_rfbScreen);
 }
 
-VNCServer::VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter,
-			const std::string& _host,
-			int _port) : 
-							m_shooter(_shooter)
+void VNCServer::Connect(const std::string& _host,
+                        int _port)
 {
 	init();
 	rfbInitSockets(m_rfbScreen);
@@ -22,17 +35,9 @@ VNCServer::VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter,
 	rfbConnect(m_rfbScreen, strdup(_host.c_str()), _port);
 }
 
-
-static void clientGone(rfbClientPtr cl)
-{
-	std::cout << std::endl << "Client Gone" << std::endl;
-	//rfbShutdownServer(cl->screen, TRUE);
-}
-
-VNCServer::VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter,
-	const std::string& _host, int _port,
-	const std::string& _idConnect) :
-									m_shooter(_shooter)
+void VNCServer::Connect(const std::string& _host,
+                        int _port,
+                        const std::string& _idConnect)
 {
 	init();
 	m_rfbScreen->port = -1;
@@ -64,21 +69,10 @@ VNCServer::VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter,
 		std::cout << "failed rfbNewClient" << std::endl;
 	}
 	cl->reverseConnection = 0;
-	cl->clientGoneHook = clientGone;
+	cl->clientGoneHook = [](rfbClientPtr cl) { std::cout << std::endl << "Client Gone" << std::endl; };
 	/**/
 
 	//rfbInitServer(m_rfbScreen);
-}
-
-VNCServer::~VNCServer()
-{
-	if (!m_rfbScreen)
-		return;
-
-	if (m_rfbScreen->frameBuffer)
-		free(m_rfbScreen->frameBuffer);
-
-	rfbScreenCleanup(m_rfbScreen);
 }
 
 void VNCServer::init()
@@ -104,7 +98,7 @@ void VNCServer::init()
 	//m_rfbScreen->displayHook = doDisplayHook;
 }
 
-void VNCServer::run()
+void VNCServer::Run()
 {
 	
 	//rfbRunEventLoop(m_rfbScreen, 4000, FALSE);

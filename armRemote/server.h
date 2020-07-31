@@ -15,17 +15,18 @@ class VNCServer
 {
 public:
 	VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter);
-	VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter,
-				const std::string& _host, int _port);
-	VNCServer(std::shared_ptr<ScrCaptureBase>& _shooter,
-		const std::string& _host, int _port,
-		const std::string& _idConnect);
-
 	virtual ~VNCServer();
 
-	void init();
-	void run();
+	void Listen();
+    void Connect(const std::string& _host,
+                    int _port);
+    void Connect(const std::string& _repeaterHost, 
+                    int _repeaterPort,
+		            const std::string& _idConnect);
+
+	void Run();
 private:
+    void init();
 	void initBuffer(unsigned char* buffer);
 	void newframebuffer(rfbScreenInfoPtr screen, int width, int height);
 

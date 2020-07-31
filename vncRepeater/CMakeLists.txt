@@ -11,12 +11,14 @@ endif()
 add_executable(remoteControlRelay
 				src/main.cpp
 				src/Socket.cpp
+                src/socket_impl.cpp
 				src/common.cpp
 				src/Listener.cpp
 				src/interface.cpp
 				src/thread.cpp
-				src/id_receiver.cpp
-				src/ip_tools.cpp)
+				src/multiplexer.cpp
+				src/ip_tools.cpp
+                src/id_list.cpp)
 
 if (MSVC)
 	target_link_libraries(remoteControlRelay
