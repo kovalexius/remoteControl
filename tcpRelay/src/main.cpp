@@ -44,19 +44,5 @@ int main(int argc, char** argv)
 		std::cout << _e.what() << std::endl;
 	}
 
-    /*
-    Socket sock1;
-    Socket sock2(std::move(sock1));
-    Socket sock2(sock1);
-    Socket sock3;
-    Socket sock4;
-
-	std::set<Socket> sockList;
-	sockList.insert(sock3);
-    sockList.insert(sock4);
-    sockList.erase(sock3);
-    /**/
-
-	//std::cin.get();
 	return 0;
 }
