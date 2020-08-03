@@ -27,8 +27,9 @@ void RunTestTask(const std::string& _pattern,
     std::promise<bool> promise;
     std::future<bool> result_future = promise.get_future();
 
-    std::thread wrThr(&writer, _pattern, _host, _port1);
     std::thread readThr(&reader, _pattern, _host, _port2, std::move(promise));
+    std::thread wrThr(&writer, _pattern, _host, _port1);
+    
     Result resTuple(std::move(wrThr), std::move(readThr), std::move(result_future));
     _resultHolder.emplace_back(std::move(resTuple));
 }
@@ -52,6 +53,7 @@ int main(int argc, char** argv)
     std::vector<std::string> patterns = 
     {
         "abcd",
+        /*
         "1234",
         "qwer",
         "11qq",
@@ -68,15 +70,16 @@ int main(int argc, char** argv)
         "Admin",
         "Test",
         "test",
+        */
     };
 
     
 
     std::vector<Result> resultHolder;
 
-    RunTestTask("arm1", host, leftport, rightport, resultHolder);
+    //RunTestTask("arm1", host, leftport, rightport, resultHolder);
 
-    /*
+    //*
     for(auto i = 0; i < patterns.size(); i++)
     {
         if(i%2)
@@ -98,7 +101,7 @@ int main(int argc, char** argv)
         std::get<0>(item).join();
         std::get<1>(item).join();
     }
-    */
+    /**/
 
     return 0;
 }

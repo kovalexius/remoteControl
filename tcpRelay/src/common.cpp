@@ -95,12 +95,14 @@ void connect_host(const Socket& _socket, const std::string& _host, const int _po
 {
     // connecting to destination
     struct sockaddr_in dest_addr;
-    memset( &dest_addr, 0, sizeof(dest_addr) );
+    memset(&dest_addr, 0, sizeof(dest_addr));
     dest_addr.sin_family = AF_INET;
-    if(inet_aton(_host.c_str(), &(dest_addr.sin_addr) ) == 0)
-        throw std::runtime_error(strerror(errno));
+    //if(inet_aton(_host.c_str(), &(dest_addr.sin_addr) ) == 0)
+    //    throw std::runtime_error(strerror(errno));
+    dest_addr.sin_addr.s_addr = inet_addr(_host.c_str());
 	dest_addr.sin_port = htons(_port);
-    int code = connect(_socket.Get(), (struct sockaddr *)&dest_addr, sizeof(dest_addr));
+    if(connect(_socket.Get(), (struct sockaddr *)&dest_addr, sizeof(dest_addr)) < 0)
+        throw std::runtime_error(strerror(errno));
 }
 
 // signals

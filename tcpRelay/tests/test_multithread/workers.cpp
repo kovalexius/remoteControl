@@ -27,12 +27,17 @@ std::string generateMsg(const std::string& _pattern, const int _repTimes)
 
 void writer(const std::string& _pattern, const std::string& _host, const int _port)
 {
+    std::cout << __FUNCTION__ << " tid: " << std::this_thread::get_id() << 
+                " host: " << _host << " _port: " << _port << std::endl;
+
     try
     {
         std::string outBuffer = generateMsg(_pattern, REPTIMES);
         auto numpieces = outBuffer.size() / PIECESIZE;
+
         Socket socket;
         connect_host(socket, _host, _port);
+        //bind_socket(socket, std::string(), _port);
 
         std::string id_string = std::string("ID:") + _pattern;
         write(socket.Get(), id_string.data(), id_string.size());
@@ -42,11 +47,15 @@ void writer(const std::string& _pattern, const std::string& _host, const int _po
             write(socket.Get(), outBuffer.data() + i * PIECESIZE, PIECESIZE);
         if(outBuffer.size() % PIECESIZE > 0)
             write(socket.Get(), outBuffer.data() + i * PIECESIZE, outBuffer.size() % PIECESIZE);
+
+        shutdown(socket.Get(), SHUT_RDWR);
     }
     catch(std::exception& _e)
     {
-        std::cout << _e.what() << std::endl;
+        std::cerr << "Caught exception: " << _e.what() << std::endl;
     }
+
+    std::cout << "End of " << __FUNCTION__ << std::endl;
 }
 
 void reader(const std::string& _pattern, 
@@ -54,12 +63,16 @@ void reader(const std::string& _pattern,
             const int _port, 
             std::promise<bool> _testPassed)
 {
+    std::cout << __FUNCTION__ << " tid: " << std::this_thread::get_id() << 
+                " host: " << _host << " _port: " << _port << std::endl;
+
     try
     {
         std::string fullBuffer;
 
         Socket socket;
         connect_host(socket, _host, _port);
+        //bind_socket(socket, std::string(), _port);
 
         std::string id_string = std::string("ID:") + _pattern;
         write(socket.Get(), id_string.data(), id_string.size());
@@ -105,8 +118,8 @@ void reader(const std::string& _pattern,
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << std::endl;
+        std::cerr << "Caught exception: " << e.what() << std::endl;
         _testPassed.set_value(false);
     }
-    
+    _testPassed.set_value(false);
 }
