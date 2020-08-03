@@ -7,6 +7,8 @@
     #include <arpa/inet.h>
     #include <unistd.h>
     #include <string.h>
+
+    #include <poll.h>
     
     #include <linux/version.h>
     
@@ -181,31 +183,51 @@ void get_interfaces( std::vector<Interface> &result )
         result.push_back( it->second );
 }
 
-void epoll_events_to_str( const uint32_t events, std::string &msg )
+void epoll_events_to_str(const uint32_t events, std::string &msg)
 {
     msg.clear();
-    if( EPOLLOUT & events )
+    if(EPOLLOUT & events)
         msg += "EPOLLOUT ";
-    if( EPOLLIN & events )
+    if(EPOLLIN & events)
         msg += "EPOLLIN ";
-    if( EPOLLRDHUP & events )
+    if(EPOLLRDHUP & events)
         msg += "EPOLLRDHUP ";
-    if( EPOLLPRI & events )
+    if(EPOLLPRI & events)
         msg += "EPOLLPRI ";
-    if( EPOLLERR & events )
+    if(EPOLLERR & events)
         msg += "EPOLLERR ";
-    if( EPOLLHUP & events )
+    if(EPOLLHUP & events)
         msg += "EPOLLHUP ";
-    if( EPOLLET & events )
+    if(EPOLLET & events)
         msg += "EPOLLET ";
-    if( EPOLLONESHOT & events )
+    if(EPOLLONESHOT & events)
         msg += "EPOLLONESHOT ";
-    if( EPOLLWAKEUP & events )
+    if(EPOLLWAKEUP & events)
         msg += "EPOLLWAKEUP ";
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,5,0)
-    if( EPOLLEXCLUSIVE & events )
+    if(EPOLLEXCLUSIVE & events)
         msg += "EPOLLEXCLUSIVE ";
 #endif
+}
+
+void poll_revents_to_str(const short _revent, std::string& _msg)
+{
+    _msg.clear();
+    if(POLLIN & _revent)
+        _msg += "POLLIN ";
+    if(POLLHUP & _revent)
+        _msg += "POLLHUP ";
+    if(POLLRDHUP & _revent)
+        _msg += "POLLRDHUP ";
+    if(POLLERR & _revent)
+        _msg += "POLLERR ";
+    if(POLLPRI & _revent)
+        _msg += "POLLPRI ";
+    if(POLLOUT & _revent)
+        _msg += "POLLOUT ";
+    if(POLLNVAL & _revent)
+        _msg += "POLLNVAL ";
+    
 }
 
 }

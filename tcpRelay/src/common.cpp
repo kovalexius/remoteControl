@@ -13,9 +13,11 @@
 
 #include <string.h>
 
+#include <signal.h>
+
 
 constexpr int LISTEN_BACKLOG = 1024;
-constexpr int MESSAGE_MAX_LEN = 100;
+constexpr int MESSAGE_MAX_LEN = 4096;
 
 bool bind_socket(const Socket& _socket,
 					const std::string& _iface_addr,
@@ -82,6 +84,42 @@ bool read_socket(const Socket& _sock, std::string& _msg)
 {
     char recv_buf[MESSAGE_MAX_LEN];
     auto recv_size = read(_sock.Get(), recv_buf, MESSAGE_MAX_LEN);
+    if(recv_size < 0)
+        return false;
     if(recv_size > 0)
-        _msg.insert(0, recv_buf, recv_size);
+        _msg.assign(recv_buf, recv_size);
+    return true;
+}
+
+void connect_host(const Socket& _socket, const std::string& _host, const int _port )
+{
+    // connecting to destination
+    struct sockaddr_in dest_addr;
+    memset( &dest_addr, 0, sizeof(dest_addr) );
+    dest_addr.sin_family = AF_INET;
+    if(inet_aton(_host.c_str(), &(dest_addr.sin_addr) ) == 0)
+        throw std::runtime_error(strerror(errno));
+	dest_addr.sin_port = htons(_port);
+    int code = connect(_socket.Get(), (struct sockaddr *)&dest_addr, sizeof(dest_addr));
+}
+
+// signals
+bool g_isLoop = true;
+
+void doStop(int _signal)
+{
+    g_isLoop = false;
+}
+
+void DefineSignals()
+{
+    struct sigaction act;
+    memset(&act, 0, sizeof(act));
+    act.sa_handler = &doStop;
+    if(sigaction(SIGHUP, &act, NULL) < 0)
+        std::cout << "Can't change SIGHUP handle" << std::endl;
+    if(sigaction(SIGINT, &act, NULL) < 0)
+        std::cout << "Can't change SIGINT handle" << std::endl;
+    if(sigaction(SIGTERM, &act, NULL) < 0)
+        std::cout << "Can't change SIGTERM handle" << std::endl;
 }

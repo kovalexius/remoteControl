@@ -82,9 +82,6 @@ void CMultiplexer::Worker()
         for(int i = 0; i < n; i++)
         {
             std::cout << "epoll signaled" << std::endl;
-
-            std::string str_event;
-            ip_tools::epoll_events_to_str(events[i].events, str_event);   //to string
             
             if(events[i].events & EPOLLHUP || events[i].events & EPOLLRDHUP)        // somebody was hanged up, aka closed peer
             {

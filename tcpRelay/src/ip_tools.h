@@ -45,5 +45,7 @@ namespace ip_tools
     
     void get_interfaces( std::vector<Interface> &interfaces );
     
-    void epoll_events_to_str( const uint32_t events, std::string &msg );
+    void epoll_events_to_str(const uint32_t events, std::string &msg);
+
+    void poll_revents_to_str(const short _revent, std::string& _msg);
 }

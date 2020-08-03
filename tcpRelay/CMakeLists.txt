@@ -18,7 +18,8 @@ add_executable(tcpRelay
 				src/thread.cpp
 				src/multiplexer.cpp
 				src/ip_tools.cpp
-                src/id_list.cpp)
+                src/id_list.cpp
+                src/msglist.cpp)
 
 if (MSVC)
 	target_link_libraries(tcpRelay
@@ -30,17 +31,4 @@ else()
 		)
 endif()
 
-
-add_executable(test_sockets
-                tests/test_sockets.cpp
-                src/Socket.cpp
-                src/socket_impl.cpp)
-
-target_include_directories(test_sockets SYSTEM
-                        PUBLIC src/)
-
-if (MSVC)
-    target_link_libraries(test_sockets
-                    ws2_32.lib)
-else()
-endif()
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests/ tests)

@@ -14,10 +14,12 @@ std::vector<char> CVncClient::g_tag;
 
 CVncClient::CVncClient() : m_cl(nullptr)
 {
+    std::cout << __FUNCTION__ << std::endl;
 }
 
 void CVncClient::Connect()
 {
+    std::cout << __FUNCTION__ << std::endl;
 	m_cl = rfbGetClient(8, 3, 4);
 	initCallbacks(m_cl);
 
@@ -27,6 +29,7 @@ void CVncClient::Connect()
 
 void CVncClient::Connect(const std::string& _host, int _port)
 {
+    std::cout << __FUNCTION__ << " _host: " << _host << " _port:" << _port << std::endl;
 	m_cl = rfbGetClient(8, 3, 4);
 	initCallbacks(m_cl);
 
@@ -38,6 +41,8 @@ void CVncClient::Connect(const std::string& _host, int _port)
 
 void CVncClient::Connect(const std::string& _repeaterHost, const int _repeaterPort, const std::string& _desthost, const int _destport)
 {
+    std::cout << __FUNCTION__ << " _repeaterHost: " << _repeaterHost << 
+            " _repeaterPort: " << _repeaterPort << " _desthost: " << _desthost << " _destport: " << _destport << std::endl;
 	m_cl = rfbGetClient(8, 3, 4);
 	initCallbacks(m_cl);
 
@@ -49,6 +54,9 @@ void CVncClient::Connect(const std::string& _repeaterHost, const int _repeaterPo
 
 void CVncClient::Connect(const std::string& _repeaterHost, const int _repeaterPort, const std::string& _idConnect)
 {
+    std::cout << __FUNCTION__ << " _repeaterHost: " << _repeaterHost << 
+            " _repeaterPort: " << _repeaterPort <<
+            " _idConnect: " << _idConnect << std::endl;
 	m_cl = rfbGetClient(8, 3, 4);
 	initCallbacks(m_cl);
 

@@ -43,9 +43,7 @@ bool CListId::CheckIdAndRemove(const std::string& _idVal, Socket& _outSock)
         _outSock = newsock;
         m_listSocketToId.erase(itSock->second);
         m_listIdToSocket.erase(_idVal);
-        //std::cout << __FUNCTION__ << " return true" << std::endl;
         return true;
     }
-    //std::cout << __FUNCTION__ << " return false" << std::endl;
     return false;
 }

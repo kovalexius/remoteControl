@@ -39,7 +39,7 @@ int main(int argc, char** argv)
         else if (!strcmp(argv[i], "-repeaterPort") && i + 1 < argc)
             repeaterPort = std::stoi(argv[i + 1]);
 	}
-
+    //*
 	CVncClient client;
     if(!repeaterHost.empty() && !id.empty())
         client.Connect(repeaterHost, repeaterPort, id);
@@ -50,16 +50,19 @@ int main(int argc, char** argv)
     else
         client.Connect();
 	client.Run();
+    /**/
 	
 	/*
 	CSdlViewer view;
-	view.resize("AdminKit", 300, 300, 8);
+    int width = 300;
+    int height = 300;
+	view.resize("AdminKit", width, height, 8);
 
 	while (true)
 	{
-		//if (!view.DoTurn())
-		//	break;
-		//view.resize(400, 350, 8);
+		if (!view.DoTurn())
+			break;
+		view.resize("AdminKit", width, height, 8);
 	}
 	/**/
 

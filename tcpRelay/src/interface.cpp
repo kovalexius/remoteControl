@@ -9,6 +9,8 @@
 
 #include "common.h"
 
+#include "ip_tools.h"
+
 
 const std::string IDNAME("ID:");
 
@@ -48,10 +50,16 @@ bool Iface::Accept()
 	m_multiplexer.AddSocket(dataSocket);
 }
 
-bool Iface::CheckId(const std::string& _idVal, Socket& _outSock)
+bool Iface::CheckIdRemove(const std::string& _idVal, Prebuffer& _prebufer)
 {
     std::cout << __FUNCTION__ << std::endl;
-    return m_listId.CheckIdAndRemove(_idVal, _outSock);
+    if(m_listId.CheckIdAndRemove(_idVal, _prebufer.m_socket))
+    {
+        m_multiplexer.RemoveSocket(_prebufer.m_socket);
+        m_listMsg.PopMessage(_prebufer.m_socket, _prebufer.m_buffer);
+        return true;
+    }
+    return false;
 }
 
 void Iface::onHup(const Socket& _socket)
@@ -60,56 +68,69 @@ void Iface::onHup(const Socket& _socket)
     m_listId.RemoveSocket(_socket);
 }
 
-void Iface::onRead(Socket _socket)
+void Iface::onRead(const Socket& _socket)
 {
-    std::cout << __FUNCTION__ << " threadid: " << std::this_thread::get_id() << std::endl;
-
     std::string msg;
 	read_socket(_socket, msg);
-    std::cout << "msg: " << msg << std::endl;
+    std::cout << __FUNCTION__ << " threadid: " << std::this_thread::get_id() << " msg: " << msg << std::endl;
+    // НУЖНО!!! Накопить буфер с сообщениями!
+    // Как только появится ID:<id> удалить эту строку из буфера с сообщениями, связать пиры и отправить им накопленное.
 
     // Парсинг ID
     auto varStr = msg.substr(0, IDNAME.length());
     if(varStr == IDNAME)
     {
         auto idStr = msg.substr(IDNAME.length());
-        Socket newSock(_socket);
-        // Запомнить id шник и сокет.
-        // Если такой id есть, то запустить оба сокета в poll в отдельном потоке
-        if(m_neighbor)
+        processId(idStr, _socket);
+    }
+    else
+        m_listMsg.PushMessage(_socket, msg);
+}
+
+void Iface::processId(const std::string& _id, const Socket& _socket)
+{
+    // Запомнить id шник и сокет.
+    // Если такой id есть, то запустить оба сокета в poll в отдельном потоке
+    if(m_neighbor)
+    {
+        Prebuffer neighborsock;
+        if(m_neighbor->CheckIdRemove(_id, neighborsock))
         {
-            Socket neighborsock(-1);
-            if(m_neighbor->CheckId(idStr, neighborsock))
-            {
-                // _socket и neighborsock спарить в poll и в отдельном потоке пускай прокидывают друг другу.
-                std::cout << "connecting peers" << std::endl;
-                sleep(1);
-                m_multiplexer.RemoveSocket(_socket);
-                std::thread exchangeThr(passThroughThread, newSock, neighborsock);
-                exchangeThr.detach();
-                m_listId.RemoveSocket(idStr);
-            }
-            else
-            {
-                std::cout << "id: " << idStr << " received" << std::endl;
-                sleep(1);
-                m_listId.AddSocket(idStr, newSock);
-            }
+            std::cout << "connecting peers" << std::endl;
+            Prebuffer currentPrebuffer;
+            currentPrebuffer.m_socket = _socket;
+            m_listMsg.PopMessage(_socket, currentPrebuffer.m_buffer);
+            m_multiplexer.RemoveSocket(_socket);
+            std::thread exchangeThr(passThroughThread, currentPrebuffer, neighborsock);
+            exchangeThr.detach();
+        }
+        else
+        {
+            std::cout << "id: " << _id << " received" << std::endl;
+            m_listId.AddSocket(_id, _socket);
         }
     }
 }
 
-
-void passThroughThread(const Socket _sock1, const Socket _sock2)
+void passThroughThread(const Prebuffer _prebuffer1, const Prebuffer _prebuffer2)
 {
+    // https://it.wikireading.ru/7073
+    // Разрыв соединения возвращает POLLIN
+
+    if(!_prebuffer1.m_buffer.empty())
+        write(_prebuffer2.m_socket.Get(), _prebuffer1.m_buffer.data(), _prebuffer1.m_buffer.size());
+
+    if(!_prebuffer2.m_buffer.empty())
+        write(_prebuffer1.m_socket.Get(), _prebuffer2.m_buffer.data(), _prebuffer2.m_buffer.size());
+
     struct pollfd fds[2];
 	
-	fds[0].fd = _sock1.Get();
-	fds[0].events = POLLIN|POLLHUP|POLLERR;
-	fds[1].fd = _sock2.Get();
-	fds[1].events = POLLIN;
+	fds[0].fd = _prebuffer1.m_socket.Get();
+	fds[0].events = POLLIN||POLLOUT|POLLHUP;
+	fds[1].fd = _prebuffer2.m_socket.Get();
+	fds[1].events = POLLIN||POLLOUT|POLLHUP;
 
-	while(true)
+	while(g_isLoop)
 	{
 		auto ret = poll(fds, 2, TIMEOUT);
 		if(ret == -1)
@@ -121,28 +142,55 @@ void passThroughThread(const Socket _sock1, const Socket _sock2)
 		{}
 		else
 		{
+            /*
+            std::string str_event;
+            ip_tools::poll_revents_to_str(fds[0].revents, str_event);   //to string
+            std::cout << __FUNCTION__ << " fd0: " << str_event << std::endl;
+            ip_tools::poll_revents_to_str(fds[1].revents, str_event);   //to string
+            std::cout << __FUNCTION__ << " fd1: " << str_event << std::endl;
+            */
+
 			if(fds[0].revents & POLLIN)
 			{
 				fds[0].revents = 0;
 				std::string msg;
-                if(read_socket(_sock1, msg))
-                    write(_sock2.Get(), msg.data(), msg.length());
+                if(read_socket(_prebuffer1.m_socket, msg))
+                {
+                    // Когда считывающая половина соединения TCP закрывается (например, если получен сегмент FIN), 
+                    // это также считается равнозначным обычным данным, и последующая операция чтения возвратит нуль.
+                    if(msg.size() == 0)
+                        goto end;
+                    write(_prebuffer2.m_socket.Get(), msg.data(), msg.size());
+                }
+                else
+                    goto end;
 			}
 			if(fds[1].revents & POLLIN)
 			{
 				fds[1].revents = 0;
 				std::string msg;
-                if(read_socket(_sock2, msg))
-                    write(_sock1.Get(), msg.data(), msg.length());
+                if(read_socket(_prebuffer2.m_socket, msg))
+                {
+                    if(msg.size() == 0)
+                        goto end;
+                    write(_prebuffer1.m_socket.Get(), msg.data(), msg.size());
+                }
+                else
+                    goto end;
 			}
             if(fds[0].revents & POLLHUP || fds[0].revents & POLLRDHUP || fds[0].revents & POLLERR ||
                 fds[1].revents & POLLHUP || fds[1].revents & POLLRDHUP || fds[1].revents & POLLERR)
             {
                 std::cout << "poll hup: " << strerror(errno) << std::endl;
-                shutdown(_sock1.Get(), SHUT_RDWR);
-                shutdown(_sock2.Get(), SHUT_RDWR);
-                return;
+                //shutdown(_prebuffer1.m_socket.Get(), SHUT_RDWR);
+                //shutdown(_prebuffer2.m_socket.Get(), SHUT_RDWR);
+                goto end;
             }
+            sleep(1);
 		}
 	}
+
+end:
+    shutdown(_prebuffer1.m_socket.Get(), SHUT_RDWR);
+    shutdown(_prebuffer2.m_socket.Get(), SHUT_RDWR);
 }
